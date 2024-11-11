@@ -1,15 +1,17 @@
 # DB migration
+## init
+$ npm run migrate:init
 ## local
-$ npm migrate:local
+$ npm run migrate:local
 ## dev
-$ npm migrate:dev
+$ npm run migrate:dev
 ## prod
-$ npm migrate:prod
+$ npm run migrate:prod
 
 # run
 ## local
-$ npm start
+$ npm run start
 ## dev
-$ npm start:dev
+$ npm run start:dev
 ## prod
-$ npm start:prod
+$ npm run start:prod
