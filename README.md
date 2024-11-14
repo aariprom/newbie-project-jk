@@ -1,12 +1,6 @@
 # DB migration
-## init
-$ npm run migrate:init
-## local
-$ npm run migrate:local
-## dev
-$ npm run migrate:dev
-## prod
-$ npm run migrate:prod
+## migrate with name specification
+$ npm run migrate --name=myMigrationName
 
 # run
 ## local

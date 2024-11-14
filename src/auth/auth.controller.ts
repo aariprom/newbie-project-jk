@@ -1,21 +1,30 @@
-import { Controller, Request, Get, Post, UseGuards } from '@nestjs/common';
-import { LocalAuthGuard } from './local-auth.guard';
+import { Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { CurrentUser } from './current-user.decorator';
+import { User } from '@prisma/client';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
   @Post('/login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  @UseGuards(LocalAuthGuard)
+  async login(
+    @CurrentUser() user: User,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    await this.authService.login(user, response);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/profile')
-  getProfile(@Request() req) {
-    return req.user;
+  @Post('/refresh')
+  @UseGuards(JwtRefreshAuthGuard)
+  async refreshToken(
+    @CurrentUser() user: User,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    await this.authService.login(user, response);
   }
 }
