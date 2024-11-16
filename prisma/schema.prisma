@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @unique
+  pw            String
+  name          String
+  email         String
+  createdDate   DateTime
+  modifiedDate  DateTime
+  profilePicUrl String?
+  diets         Diet[]
+  customFoods   Food[]
+  posts         Post[]
+  favoriteFoods FavoriteFood[]
+  RefreshToken  RefreshToken?
+}
+
+model Food {
+  id            Int           @id @default(autoincrement())
+  user          User?         @relation(fields: [userId], references: [id])
+  userId        String?
+  name          String
+  type          String
+  carbohydrates Int?
+  fat           Int?
+  protein       Int?
+  sugars        Int?
+  calories      Int?
+  sodium        Int?
+  FoodsInDiet   FoodsInDiet[]
+}
+
+model FavoriteFood {
+  User   User?  @relation(fields: [userId], references: [id])
+  userId String
+  foodId Int
+
+  @@unique([userId, foodId])
+}
+
+model Diet {
+  id     Int           @id @default(autoincrement())
+  user   User          @relation(fields: [userId], references: [id])
+  userId String
+  foods  FoodsInDiet[]
+  memo   String?
+  type   DietType
+}
+
+model FoodsInDiet {
+  diet   Diet @relation(fields: [dietId], references: [id])
+  dietId Int
+  food   Food @relation(fields: [foodId], references: [id])
+  foodId Int
+
+  @@unique([dietId, foodId])
+}
+
+model Picture {
+  id     Int    @id @default(autoincrement())
+  post   Post?  @relation(fields: [postId], references: [id])
+  postId Int?
+  url    String
+}
+
+model Post {
+  id           Int       @id @default(autoincrement())
+  user         User      @relation(fields: [userId], references: [id])
+  userId       String
+  content      String?
+  pictures     Picture[]
+  createdDate  DateTime
+  modifiedDate DateTime
+}
+
+model RefreshToken {
+  token  String @id
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+}
+
+enum DietType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  OTHERS
+}
