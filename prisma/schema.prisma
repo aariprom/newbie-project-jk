@@ -27,13 +27,14 @@ model Food {
   user          User?         @relation(fields: [userId], references: [id])
   userId        String?
   name          String
-  type          String
-  carbohydrates Int?
-  fat           Int?
-  protein       Int?
-  sugars        Int?
-  calories      Int?
-  sodium        Int?
+  type          Int
+  carbohydrates Int?          @default(0)
+  fat           Int?          @default(0)
+  protein       Int?          @default(0)
+  sugars        Int?          @default(0)
+  calories      Int?          @default(0)
+  sodium        Int?          @default(0)
+  category      Int?
   FoodsInDiet   FoodsInDiet[]
 }
 
