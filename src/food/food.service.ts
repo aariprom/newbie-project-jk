@@ -8,4 +8,5 @@ import { promises as fs } from 'fs';
 export class FoodService {
   constructor(private readonly prismaService: PrismaService,
               private readonly configService: ConfigService) {};
+
 }
