@@ -23,19 +23,18 @@ model User {
 }
 
 model Food {
-  id          Int           @id @default(autoincrement())
-  user        User          @relation(fields: [userId], references: [id])
-  userId      String
-  name        String
-  type        String
-  carbo       Int?
-  fat         Int?
-  protein     Int?
-  moisture    Int?
-  fiber       Int?
-  sugars      Int?
-  calories    Int?
-  FoodsInDiet FoodsInDiet[]
+  id            Int           @id @default(autoincrement())
+  user          User?         @relation(fields: [userId], references: [id])
+  userId        String?
+  name          String
+  type          String
+  carbohydrates Int?
+  fat           Int?
+  protein       Int?
+  sugars        Int?
+  calories      Int?
+  sodium        Int?
+  FoodsInDiet   FoodsInDiet[]
 }
 
 model FavoriteFood {

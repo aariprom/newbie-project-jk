@@ -98,9 +98,9 @@ export class AuthService {
       const user = await this.usersService.getUser(id);
       const storedRefreshToken = await this.tokenService.getRefreshToken(id);
       const authenticated = await compare(refreshToken, storedRefreshToken.token);
-      /*if (!authenticated) {
+      if (!authenticated) {
         throw new UnauthorizedException();
-      }*/
+      }
       return user;
     } catch (err) {
       throw new UnauthorizedException('Refresh token is not valid.');
