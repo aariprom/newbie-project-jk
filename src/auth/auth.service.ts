@@ -34,16 +34,11 @@ export class AuthService {
   }
 
   async logout(user: any, res: Response, redirect = false): Promise<void> {
-    res.cookie('Authentication', '', {
-      httpOnly: false,
-      secure: process.env.NODE_ENV === 'production',
-      expires: new Date(0), // set expiration time to past -> immediately invalidate
-    });
-    console.log('[auth.service.ts] logout() | cookie is removed');
+    console.log('[auth.service.ts] logout() | user: ', user);
 
     // remove refreshToken from db
-    await this.tokenService.removeRefreshToken(user.id);
-
+    await this.tokenService.invalidateTokens(user, res);
+    console.log('[auth.service.ts] logout() | Successfully invalidated tokens.');
     if (redirect) {
       res.redirect(this.configService.get('AUTH_UI_REDIRECT'));
     }
