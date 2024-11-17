@@ -1,22 +1,99 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma.service';
-import { RefreshToken, Prisma } from '@prisma/client';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
+import { PrismaService } from '../../prisma.service'
 
 @Injectable()
 export class TokenService {
-  constructor(private readonly prisma: PrismaService) {};
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly prisma: PrismaService,
+  ) {}
 
-  async createRefreshToken(data: Prisma.RefreshTokenCreateInput): Promise<RefreshToken> {
-    console.log('[token.service.ts] createRefreshToken():');
-    console.log('token: ', data.token, 'userId: ', data.user.create.id);
-    return this.prisma.refreshToken.create({ data:
-        {
-          token: data.token,
-          userId: data.user.create.id
-        }});
+  /*************** Token Validation  ***************/
+
+  // Method to create access token
+  createAccessToken(userId: string): string {
+    const tokenPayload = { userId };
+    const expiresInAccess = this.configService.get<number>('JWT_ACCESS_TOKEN_EXPIRATION_MS');
+
+    return this.jwtService.sign(tokenPayload, {
+      secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
+      expiresIn: `${expiresInAccess}ms`,  // Expiry time for access token
+    });
   }
 
-  async getRefreshToken(userId: string): Promise<RefreshToken> {
+  // Method to create refresh token
+  createRefreshToken(userId: string): string {
+    const tokenPayload = { userId };
+    const expiresInRefresh = this.configService.get<number>('JWT_REFRESH_TOKEN_EXPIRATION_MS');
+
+    return this.jwtService.sign(tokenPayload, {
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: `${expiresInRefresh}ms`,  // Expiry time for refresh token
+    });
+  }
+
+  /*************** Token Setting to Response  ***************/
+
+  // Method to send cookies with the access and refresh tokens
+  setCookies(response: Response, accessToken: string, refreshToken: string) {
+    const expiresAccessToken = new Date();
+    expiresAccessToken.setMilliseconds(expiresAccessToken.getTime() + parseInt(this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_MS')));
+
+    const expiresRefreshToken = new Date();
+    expiresRefreshToken.setMilliseconds(expiresRefreshToken.getTime() + parseInt(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_MS')));
+
+    response.cookie('Authentication', accessToken, {
+      httpOnly: false,
+      secure: this.configService.get('NODE_ENV') === 'production',
+      expires: expiresAccessToken,
+    });
+
+    response.cookie('Refresh', refreshToken, {
+      httpOnly: false,
+      secure: this.configService.get('NODE_ENV') === 'production',
+      expires: expiresRefreshToken,
+    });
+  }
+
+  /*************** Token Invalidation  ***************/
+
+  async invalidateTokens(user: any, res: Response): Promise<void> {
+
+    // expire access token
+    res.cookie('Authentication', '', {
+      httpOnly: false,
+      secure: this.configService.get('NODE_ENV') === 'production',
+      expires: new Date(0), // set expiration time to past -> immediately invalidate
+    });
+
+    // expire refresh token
+    res.cookie('Refresh', '', {
+      httpOnly: false,
+      secure: this.configService.get('NODE_ENV') === 'production',
+      expires: new Date(0),
+    })
+
+    // remove refresh token from DB
+    await this.removeRefreshToken(user.id);
+  }
+
+  /*************** Refresh Token Management with DB ***************/
+
+  // Store the refresh token (assuming you store them in a DB or a cache)
+  async storeRefreshToken(refreshToken: string, user: any) {
+    return this.prisma.refreshToken.create({
+      data: {
+        token: refreshToken,
+        userId: user.id,
+      }
+    })
+  }
+
+  async getRefreshToken(userId: string): Promise<any> {
     return this.prisma.refreshToken.findUnique({
       where: {
         userId: userId,
@@ -24,8 +101,8 @@ export class TokenService {
     })
   }
 
-  async removeRefreshToken(userId: string): Promise<void> {
-    this.prisma.refreshToken.delete({
+  async removeRefreshToken(userId: string) {
+    return this.prisma.refreshToken.delete({
       where: {
         userId: userId,
       }

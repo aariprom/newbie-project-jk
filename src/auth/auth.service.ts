@@ -1,11 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import { compare, hash } from 'bcrypt';
-import { User } from '@prisma/client';
+import { compare } from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { Response } from 'express';
-import { TokenPayload } from './token-payload.interface';
 import { TokenService } from './token/token.service';
 
 @Injectable()
@@ -13,68 +10,42 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
-    private readonly jwtService: JwtService,
     private readonly tokenService: TokenService,
   ) {}
 
-  async login(user: User, response: Response, redirect = false) {
-    const expiresAccessToken = new Date();
-    expiresAccessToken.setMilliseconds(
-      expiresAccessToken.getTime() +
-      parseInt(
-        this.configService.getOrThrow<string>(
-          'JWT_ACCESS_TOKEN_EXPIRATION_MS',
-        ),
-      ),
-    );
+  async login(user: any, res: Response, redirect = false) {
+    // Generate tokens using TokenService
+    const accessToken = this.tokenService.createAccessToken(user.id);
+    const refreshToken = this.tokenService.createRefreshToken(user.id);
+    console.log('[auth.service.ts] login() | accessToken: ', accessToken);
+    console.log('[auth.service.ts] login() | refreshToken: ', refreshToken);
 
-    const expiresRefreshToken = new Date();
-    expiresRefreshToken.setMilliseconds(
-      expiresRefreshToken.getTime() +
-      parseInt(
-        this.configService.getOrThrow<string>(
-          'JWT_REFRESH_TOKEN_EXPIRATION_MS',
-        ),
-      ),
-    );
+    // Store refresh token
+    await this.tokenService.storeRefreshToken(refreshToken, user);
 
-    const tokenPayload: TokenPayload = {
-      userId: user.id,
-    };
-    const accessToken = this.jwtService.sign(tokenPayload, {
-      secret: this.configService.getOrThrow('JWT_ACCESS_TOKEN_SECRET'),
-      expiresIn: `${this.configService.getOrThrow(
-        'JWT_ACCESS_TOKEN_EXPIRATION_MS',
-      )}ms`,
-    });
-    const refreshToken = this.jwtService.sign(tokenPayload, {
-      secret: this.configService.getOrThrow('JWT_REFRESH_TOKEN_SECRET'),
-      expiresIn: `${this.configService.getOrThrow(
-        'JWT_REFRESH_TOKEN_EXPIRATION_MS',
-      )}ms`,
-    });
+    // Set cookies
+    this.tokenService.setCookies(res, accessToken, refreshToken);
+    console.log('[auth.service.ts] login() | Cookie is set');
 
-    await this.tokenService.createRefreshToken(
-      { token: refreshToken,
-        user: {
-          create: user
-        }
-      }
-    )
+    // Redirect after login if needed
+    if (redirect) {
+      res.redirect(this.configService.get('AUTH_UI_REDIRECT'));
+    }
+  }
 
-    response.cookie('Authentication', accessToken, {
-      httpOnly: true,
-      secure: this.configService.get('NODE_ENV') === 'production',
-      expires: expiresAccessToken,
+  async logout(user: any, res: Response, redirect = false): Promise<void> {
+    res.cookie('Authentication', '', {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      expires: new Date(0), // set expiration time to past -> immediately invalidate
     });
-    response.cookie('Refresh', refreshToken, {
-      httpOnly: true,
-      secure: this.configService.get('NODE_ENV') === 'production',
-      expires: expiresRefreshToken,
-    });
+    console.log('[auth.service.ts] logout() | cookie is removed');
+
+    // remove refreshToken from db
+    await this.tokenService.removeRefreshToken(user.id);
 
     if (redirect) {
-      response.redirect(this.configService.getOrThrow('AUTH_UI_REDIRECT'));
+      res.redirect(this.configService.get('AUTH_UI_REDIRECT'));
     }
   }
 
@@ -82,8 +53,8 @@ export class AuthService {
     try {
       const user = await this.usersService.getUser(id);
       const authenticated = await compare(password, user.pw);
-      console.log('[auth.service.ts] verifyUser(): user: ', user);
-      console.log('[auth.service.ts] verifyUser(): authenticated?:, ', authenticated);
+      console.log('[auth.service.ts] verifyUser() | user: ', user);
+      console.log('[auth.service.ts] verifyUser() | authenticated:, ', authenticated);
       if (!authenticated) {
         throw new UnauthorizedException();
       }
@@ -95,9 +66,12 @@ export class AuthService {
 
   async verifyUserRefreshToken(refreshToken: string, id: string) {
     try {
+      console.log('[auth.service.ts] verifyUserRefreshToken() | userId: ', id);
+      console.log('[auth.service.ts] verifyUserRefreshToken() | refreshToken:, ', refreshToken);
       const user = await this.usersService.getUser(id);
       const storedRefreshToken = await this.tokenService.getRefreshToken(id);
       const authenticated = await compare(refreshToken, storedRefreshToken.token);
+      console.log('[auth.service.ts] verifyUserRefreshToken() | authenticated:', authenticated);
       if (!authenticated) {
         throw new UnauthorizedException();
       }

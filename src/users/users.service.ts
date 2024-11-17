@@ -2,6 +2,9 @@ import { Injectable, Param } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { User, Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { createUserRequestDTO } from './dto/createUserRequest.dto';
+import { validate } from 'class-validator';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
@@ -9,14 +12,22 @@ export class UsersService {
   constructor(private prisma: PrismaService) {
   }
 
-  async createUser(data: Prisma.UserCreateInput): Promise<User> {
+  async createUser(params: any): Promise<User> {
+    console.log('[user.service.ts] createUser() | params: ', params);
+    const validatedParams = plainToInstance(createUserRequestDTO, params);
+    const validationErrors = await validate(validatedParams);
+    if (validationErrors.length > 0) {
+      console.log('[user.service.ts] createUser() | validationErrors: ', validationErrors);
+    }
     const salt = await bcrypt.genSalt(10);
-    console.log(data.pw);
-    const hashedPassword = await bcrypt.hash(data.pw, salt);
+    const hashedPassword = await bcrypt.hash(params.pw, salt);
+    const currentDateTime = (new Date()).toISOString();
     return this.prisma.user.create({
       data: {
-        ...data,
+        ...params,
         pw: hashedPassword,
+        createdDate: currentDateTime,
+        modifiedDate: currentDateTime,
       },
     });
   }
