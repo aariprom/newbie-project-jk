@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from '@prisma/client';
 
@@ -7,11 +7,8 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Post('/signup')
-  async createUser(
-    // createdDate, modifiedDate -> frontend
-    @Body() userData: { id: string, pw: string, name: string, email: string }
-  ): Promise<User> {
-    const currentDateTime = (new Date()).toISOString();
-    return this.userService.createUser({ ...userData, createdDate: currentDateTime, modifiedDate: currentDateTime });
+  async createUser(@Body() body: any): Promise<User> {
+    console.log('[user.controller.ts] createUser() | body: ', body);
+    return this.userService.createUser(body);
   }
 }

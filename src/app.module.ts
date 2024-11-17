@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthController } from './auth/auth.controller';
@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { FoodModule } from './food/food.module';
 import * as process from 'node:process';
+import { LogJwtMiddleware } from './auth/middleware/logJwt.middleware';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -17,4 +18,10 @@ import * as process from 'node:process';
   controllers: [AppController, AuthController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LogJwtMiddleware).forRoutes(
+      '*'
+    )
+  }
+}
