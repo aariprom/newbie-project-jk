@@ -22,8 +22,8 @@ model User {
 }
 
 model Food {
-  id            Int           @id @default(autoincrement())
-  user          User?         @relation(fields: [userId], references: [id])
+  id            Int            @id @default(autoincrement())
+  user          User?          @relation(fields: [userId], references: [id])
   userId        String?
   name          String
   type          FoodType
@@ -34,12 +34,14 @@ model Food {
   sugars        Int?
   calories      Int?
   sodium        Int?
+  favoriteFoods FavoriteFood[]
   FoodsInDiet   FoodsInDiet[]
 }
 
 model FavoriteFood {
-  User   User?  @relation(fields: [userId], references: [id])
+  User   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
+  Food   Food?  @relation(fields: [foodId], references: [id], onDelete: Cascade)
   foodId Int
 
   @@unique([userId, foodId])
@@ -55,9 +57,9 @@ model Diet {
 }
 
 model FoodsInDiet {
-  diet   Diet @relation(fields: [dietId], references: [id])
+  diet   Diet @relation(fields: [dietId], references: [id], onDelete: Cascade)
   dietId Int
-  food   Food @relation(fields: [foodId], references: [id])
+  food   Food @relation(fields: [foodId], references: [id], onDelete: Cascade)
   foodId Int
 
   @@unique([dietId, foodId])
@@ -82,7 +84,7 @@ model Post {
 
 model RefreshToken {
   token  String @id
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @unique
 }
 

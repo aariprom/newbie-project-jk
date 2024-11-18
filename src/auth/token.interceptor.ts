@@ -5,6 +5,7 @@ import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { TokenService } from './token/token.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TokenInterceptor implements NestInterceptor {
@@ -12,6 +13,7 @@ export class TokenInterceptor implements NestInterceptor {
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
     private readonly tokenService: TokenService,
+    private readonly configService: ConfigService,
   ) {}
 
   // Intercept method for handling expired tokens
@@ -26,7 +28,7 @@ export class TokenInterceptor implements NestInterceptor {
     try {
       // Try to verify the access token
       const decodedAccessToken = await this.jwtService.verifyAsync(accessToken, {
-        secret: process.env.JWT_SECRET_KEY,
+        secret: this.configService.getOrThrow('JWT_ACCESS_TOKEN_SECRET'),
       });
 
       // If the access token is valid, continue with the request

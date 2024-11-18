@@ -1,41 +1,66 @@
-import { Get, Query, Post, Req, Res, Controller, HttpStatus, ValidationPipe, Body, UseGuards } from '@nestjs/common';
+import { Get, Query, Post, Delete, Controller, Body, UseGuards, Param, Req } from '@nestjs/common';
 import { FoodService } from './food.service';
-import { XlsxService } from './xlsx/xlsx.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { JwtRefreshAuthGuard } from '../auth/guards/jwt-refresh-auth.guard';
-import { UserId } from '../user-id.decorator';
+import { FavFoodService } from './favFood/favFood.service';
 
 @Controller('food')
 export class FoodController {
   constructor(private readonly foodService: FoodService,
-              private readonly xlsxService: XlsxService,) {
-  }
-
-  @Get('/reset')
-  async reset() {
-    return this.foodService.reset();
-  }
-
-  @Get('/init')
-  async init() {
-    return this.xlsxService.init();
+              private readonly favFoodService: FavFoodService,) {
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/search')
   async search(@Query() query: any) {
-    console.log('[food.controller.ts] search() | query: ', query);
+    console.log('[food.controller] search() | query: ', query);
     return this.foodService.search(query);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('/create')
-  async create(@UserId() userId: string, @Body() body: any) {
-    console.log('[food.controller.ts] create() | body: ', body, 'userId: ', userId);
+  async create(@Req() req: any, @Body() body: any) {
+    const payload: any = await req.payload;
+    const userId = payload.userId;
+    console.log('[food.controller] create() | body: ', body, 'userId: ', userId);
     return this.foodService.create(userId, body);
   }
 
-  /*@Get('/syncTest')
+  @UseGuards(JwtAuthGuard)
+  @Delete('/delete/:foodId')
+  async delete(@Param('foodId') foodId: number) {
+    console.log('[food.controller] delete() | foodId: ', foodId);
+    return this.foodService.delete(foodId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/addToFav/:foodId')
+  async addToFav(@Req() req: any, @Param('foodId') foodId: any) {
+    const payload: any = await req.payload;
+    const userId = payload.userId;
+    console.log('[food.controller] addToFav()');
+    return this.favFoodService.createFavFood(userId, foodId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/delFromFav/:foodId')
+  async delFromFav(@Req() req: any, @Param('foodId') foodId: number) {
+    const payload: any = await req.payload;
+    const userId = payload.userId;
+    console.log('[food.controller] deleteFromFav()');
+    return this.favFoodService.deleteFavFood(userId, foodId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/favFood')
+  async readFavFood(@Req() req: any) {
+    const payload: any = await req.payload;
+    const userId = payload.userId;
+    console.log('[food.controller] readFavFood()');
+    return this.favFoodService.getFavFood(userId)
+  }
+
+/*
+  @Get('/syncTest')
   async syncTest() {
     const jsonArray = await this.xlsxService.readTest();
     console.log(jsonArray);
@@ -54,6 +79,17 @@ export class FoodController {
   @Get('/getTest')
   async getTest() {
     return this.xlsxService.getTest();
-  }*/
+  }
+
+    @Get('/reset')
+  async reset() {
+    return this.foodService.reset();
+  }
+
+  @Get('/init')
+  async init() {
+    return this.xlsxService.init();
+  }
+*/
 
 }

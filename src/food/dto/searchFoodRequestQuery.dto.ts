@@ -10,6 +10,7 @@ export class searchFoodRequestQueryDto {
 
   @IsString()
   @IsFoodType()
+  @IsOptional()
   type?: FoodType;
 
   @IsNumber()
@@ -84,4 +85,8 @@ export class searchFoodRequestQueryDto {
   @IsOptional()
   @Type(() => Number)
   maxSodium?: number;
+
+  @IsOptional()
+  @Type(() => String)
+  userId?: string;
 }
