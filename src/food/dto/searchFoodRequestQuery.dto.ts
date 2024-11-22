@@ -1,6 +1,6 @@
 import { IsOptional, IsNumber, Min, Max, IsString, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
-import { IsFoodType } from '../validator/foodtype.validator';
+import { IsFoodType } from './validator/foodtype.validator';
 import { FoodType } from '@prisma/client';
 
 export class searchFoodRequestQueryDto {
@@ -10,6 +10,7 @@ export class searchFoodRequestQueryDto {
 
   @IsString()
   @IsFoodType()
+  @IsOptional()
   type?: FoodType;
 
   @IsNumber()
@@ -84,4 +85,8 @@ export class searchFoodRequestQueryDto {
   @IsOptional()
   @Type(() => Number)
   maxSodium?: number;
+
+  @IsOptional()
+  @Type(() => String)
+  userId?: string;
 }

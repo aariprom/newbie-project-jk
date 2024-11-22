@@ -9,6 +9,8 @@ import { searchFoodRequestQueryDto } from './dto/searchFoodRequestQuery.dto';
 export class FoodService {
   constructor(private readonly prisma: PrismaService) {};
 
+  /* todo: consider performance issue */
+  /* todo: filter custom food */
   async search(searchParams: any) {
     const validatedParams = plainToInstance(searchFoodRequestQueryDto, searchParams);
     const validationErrors = await validate(validatedParams);
@@ -35,6 +37,7 @@ export class FoodService {
       maxSugars,
       minSodium,
       maxSodium,
+      userId,
     } = validatedParams;
 
     const whereClause: any = {};
@@ -112,6 +115,10 @@ export class FoodService {
       }
     }
 
+    if (userId) {
+      whereClause.userId = userId;
+    }
+
     return this.prisma.food.findMany({ where: whereClause });
   }
 
@@ -119,6 +126,8 @@ export class FoodService {
     return this.prisma.food.deleteMany();
   }
 
+  /* todo: load data of basic food as default value, and let user modify them */
+  /* todo: it can be done by frontend */
   async create(userId: string, data: any) {
     const dataDto = plainToInstance(createFoodDto, data);
     const validationErrors = await validate(dataDto);
@@ -135,4 +144,13 @@ export class FoodService {
       }
     );
   }
+
+  async delete(foodId: number): Promise<any> {
+    return this.prisma.food.delete({
+      where: {
+        id: foodId,
+      }
+    })
+  }
+
 }
