@@ -54,6 +54,7 @@ model Diet {
   foods  FoodsInDiet[]
   memo   String?
   type   DietType
+  date   DateTime
 }
 
 model FoodsInDiet {

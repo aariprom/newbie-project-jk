@@ -1,11 +1,14 @@
 import { IsOptional, IsNumber, Min, IsString } from 'class-validator';
+import { IsFoodType } from './validator/foodtype.validator';
+import { FoodType } from '@prisma/client';
 
 export class createFoodDto {
   @IsString()
   name: string;
 
+  @IsFoodType()
   @IsString()
-  type: string;
+  type: FoodType;
 
   @IsNumber()
   @IsOptional()
