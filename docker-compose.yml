@@ -5,7 +5,7 @@ services:
     container_name: newbie-backend
     image: mysql:8.0.36
     env_file:
-      - ./env/.env.${NODE_ENV}
+      - ./server/env/.env.${NODE_ENV}
     restart: on-failure
     ports:
       - '${DB_LOCAL_PORT}:{DB_MYSQL_PORT}'
@@ -15,9 +15,9 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - TZ=${TZ}
     volumes:
-      - ./volumes/db:/var/lib/mysql
-      - ./volumes/dump:/dump
-      - ./my.cnf:/etc/mysql/my.cnf
+      - ./server/volumes/db:/var/lib/mysql
+      - ./server/volumes/dump:/dump
+      - ./server/my.cnf:/etc/mysql/my.cnf
     command: |
       --sql_mode=NO_ENGINE_SUBSTITUTION --default_storage_engine=InnoDB 
       --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
