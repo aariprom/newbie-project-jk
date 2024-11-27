@@ -1,48 +1,44 @@
 import { Controller, Get, Post, Delete, Req, Body, Param, UseGuards } from '@nestjs/common';
 import { PostService } from './post.service';
-import { Post as P } from '@prisma/client'
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Post as P, User } from '@prisma/client';
+import { CreatePostDto } from './dto/createPost.dto';
+import { EditPostDto } from './dto/editPost.dto';
+import { CurrentUser } from '../auth/current-user.decorator';
 
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Post('/create')
-  async createPost(@Req() req: any, @Body() body: any): Promise<P> {
-    const payload = await req['payload'];
-    const userId = payload.userId;
-    return this.postService.createPost(userId, body);
+  @Post()
+  async createPost(@CurrentUser() user: User, @Body() body: CreatePostDto): Promise<P> {
+    return this.postService.createPost(user.id, body);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Delete('/delete/:postId')
-  async deletePost(@Req() req: any, @Param('postId') postId: number) {
+  @Delete('/:postId')
+  async deletePost(@Param('postId') postId: number) {
     return this.postService.deletePost(postId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  /* todo: is this really needed? */
   @Delete('/deleteAll')
-  async deleteAll(@Req() req: any) {
-    const payload = await req['payload'];
-    const userId = payload.userId;
-    return this.postService.deletePostByUserId(userId);
+  async deleteAll(@CurrentUser() user: User) {
+    return this.postService.deletePostByUserId(user.id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('/edit/:postId')
-  async editPost(@Param('postId') postId: number, @Body() body: any) {
-    return this.postService.editPost(body, postId);
+  async editPost(@Param('postId') postId: number, @Body() body: EditPostDto) {
+    return this.postService.editPost(postId, body);
   }
 
-  @Get('/read/:postId')
+  @Get('/:postId')
   async read(@Param('postId') postId: number) {
     return this.postService.getPostByPostId(postId);
   }
 
-  @Get('/read/:userId')
+  /* todo: make an API for searching post, integrate this to that */
+  /*@Get('/:userId')
   async readById(@Param('userId') userId: string) {
     return this.postService.getPostByUserId(userId);
-  }
+  }*/
 
 }

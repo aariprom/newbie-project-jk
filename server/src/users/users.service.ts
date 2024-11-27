@@ -1,55 +1,32 @@
-import { Injectable, Param } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { User, Prisma } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
-import { createUserRequestDTO } from './dto/createUserRequest.dto';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
+import { EditUserProfileDto } from './dto/editUserProfile.dto';
+import { S3Service } from '../S3/s3.service';
 
 @Injectable()
 export class UsersService {
 
-  constructor(private prisma: PrismaService) {
-  }
+  constructor(private readonly prisma: PrismaService,
+              private readonly s3Service: S3Service,) {}
 
-  async createUser(params: any): Promise<User> {
-    console.log('[user.service.ts] createUser() | params: ', params);
-    const validatedParams = plainToInstance(createUserRequestDTO, params);
-    const validationErrors = await validate(validatedParams);
+  async editProfile(userId: string, body: any) {
+    const validated = plainToInstance(EditUserProfileDto, body);
+    const validationErrors = await validate(validated);
     if (validationErrors.length > 0) {
-      console.log('[user.service.ts] createUser() | validationErrors: ', validationErrors);
+      throw new HttpException('Invalid data to edit user profile.', HttpStatus.BAD_REQUEST);
     }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(params.pw, salt);
-    const currentDateTime = (new Date()).toISOString();
-    return this.prisma.user.create({
-      data: {
-        ...params,
-        pw: hashedPassword,
-        createdDate: currentDateTime,
-        modifiedDate: currentDateTime,
+    return this.prisma.user.update({
+      data: validated,
+      where: {
+        id: userId,
       },
     });
   }
 
-  async updateUser(params: {
-    where: Prisma.UserWhereUniqueInput;
-    data: Prisma.UserUpdateInput;
-  }): Promise<User> {
-    const { where, data } = params;
-    return this.prisma.user.update({
-      data,
-      where,
-    });
-  }
-
-  async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
-    return this.prisma.user.delete({
-      where,
-    });
-  }
-
-  async getUser(@Param('id') id: string): Promise<User> {
+  async getUser(id: string): Promise<User> {
     return this.prisma.user.findUnique({
       where: {
         id: id,
@@ -57,20 +34,38 @@ export class UsersService {
     })
   }
 
-  async getUsers(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.UserWhereUniqueInput;
-    where?: Prisma.UserWhereInput;
-    orderBy?: Prisma.UserOrderByWithRelationInput;
-  }): Promise<User[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.user.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-    });
-  }
+  /*
+    async updateUser(params: {
+      where: Prisma.UserWhereUniqueInput;
+      data: Prisma.UserUpdateInput;
+    }): Promise<User> {
+      const { where, data } = params;
+      return this.prisma.user.update({
+        data,
+        where,
+      });
+    }
+
+    async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
+      return this.prisma.user.delete({
+        where,
+      });
+    }
+
+    async getUsers(params: {
+      skip?: number;
+      take?: number;
+      cursor?: Prisma.UserWhereUniqueInput;
+      where?: Prisma.UserWhereInput;
+      orderBy?: Prisma.UserOrderByWithRelationInput;
+    }): Promise<User[]> {
+      const { skip, take, cursor, where, orderBy } = params;
+      return this.prisma.user.findMany({
+        skip,
+        take,
+        cursor,
+        where,
+        orderBy,
+      });
+    }*/
 }

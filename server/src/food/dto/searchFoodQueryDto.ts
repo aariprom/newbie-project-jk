@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { IsFoodType } from './validator/foodtype.validator';
 import { FoodType } from '@prisma/client';
 
-export class searchFoodRequestQueryDto {
+export class searchFoodQueryDto {
   @IsString()
   @IsOptional()
   name?: string;

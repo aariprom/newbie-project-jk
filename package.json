@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "start": "npm run start:server & npm run start:client",
+    "start:server": "npm --prefix server start",
+    "start:client": "npm --prefix client start",
+    "build": "npm run build:server && npm run build:client",
+    "build:server": "npm --prefix server build",
+    "build:client": "npm --prefix client build",
+    "lint": "eslint \"{server,client}/src/**/*.{ts,tsx}\""
+  },
+  "devDependencies": {
+    "@types/multer": "^1.4.12",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  }
+}

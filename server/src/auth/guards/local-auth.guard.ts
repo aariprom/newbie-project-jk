@@ -8,7 +8,7 @@ export class LocalAuthGuard extends AuthGuard('local') {
     const { id, password } = request.body;
     if (err || !user) {
       if (!id || !password) {
-        throw new HttpException({ message: 'invalid id or password'}, HttpStatus.UNAUTHORIZED);
+        throw new HttpException({ message: 'Invalid id or password.'}, HttpStatus.UNAUTHORIZED);
       } else {
         throw err || new UnauthorizedException();
       }
