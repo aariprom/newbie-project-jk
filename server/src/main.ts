@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
-import { GlobalExceptionFilter } from './exception.filter';
 import { TokenInterceptor } from './token.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { PrismaExceptionFilter } from './prisma-exception.filter';

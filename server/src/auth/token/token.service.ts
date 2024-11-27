@@ -46,6 +46,9 @@ export class TokenService {
     const expiresRefreshToken = new Date();
     expiresRefreshToken.setMilliseconds(expiresRefreshToken.getTime() + parseInt(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_MS')));
 
+    console.log(accessToken);
+    console.log(refreshToken);
+
     response.cookie('Authentication', accessToken, {
       httpOnly: false,
       secure: this.configService.get('NODE_ENV') === 'production',
@@ -95,11 +98,15 @@ export class TokenService {
   }
 
   async getRefreshToken(userId: string): Promise<any> {
-    return this.prisma.refreshToken.findUnique({
+    const token = await this.prisma.refreshToken.findUnique({
       where: {
         userId: userId,
+      },
+      select: {
+        token: true,
       }
     })
+    return token.token;
   }
 
   async removeRefreshToken(userId: string) {

@@ -1,11 +1,4 @@
-import {
-  Injectable,
-  ExecutionContext,
-  CallHandler,
-  NestInterceptor,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, HttpException, HttpStatus, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth/auth.service';
@@ -91,7 +84,7 @@ export class TokenInterceptor implements NestInterceptor {
         return next.handle();
       } catch (refreshError) {
         console.log('Error while refreshing token.')
-        throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+        throw new HttpException('Unauthorized, Please remove cookies and login again.', HttpStatus.UNAUTHORIZED);
       }
     }
   }

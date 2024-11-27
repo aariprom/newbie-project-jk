@@ -1,4 +1,4 @@
-import { Get, Query, Post, Delete, Controller, Body, UseGuards, Param, Req, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { FoodService } from './food.service';
 import { FavFoodService } from './favFood/favFood.service';
 import { XlsxService } from './xlsx/xlsx.service';
