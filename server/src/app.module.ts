@@ -38,10 +38,6 @@ import { TokenInterceptor } from './token.interceptor';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: TokenInterceptor,
     },],
 })
 export class AppModule implements NestModule {

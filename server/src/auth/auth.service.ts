@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { compare } from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { Response } from 'express';
@@ -7,12 +6,12 @@ import { TokenService } from './token/token.service';
 import { Prisma, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma.service';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
     private readonly tokenService: TokenService,
   ) {}
@@ -42,22 +41,19 @@ export class AuthService {
     }
   }
 
-  async login(user: User, res: Response, redirect = false) {
+  async login(user: LoginDto, res: Response, redirect = false) {
     // Generate tokens using TokenService
     const accessToken = this.tokenService.createAccessToken(user.id);
     const refreshToken = this.tokenService.createRefreshToken(user.id);
-    console.log('[auth.service.ts] login() | accessToken: ', accessToken);
-    console.log('[auth.service.ts] login() | refreshToken: ', refreshToken);
 
-    /*// Store refresh token
+    // Store refresh token
     const token = await this.tokenService.getRefreshToken(user.id)
     if (!token) {
       await this.tokenService.storeRefreshToken(refreshToken, user);
-    }*/
+    }
 
     // Set cookies
     this.tokenService.setCookies(res, accessToken, refreshToken);
-    console.log('[auth.service.ts] login() | Cookie is set');
 
     // Redirect after login if needed
     /*if (redirect) {
@@ -66,8 +62,6 @@ export class AuthService {
   }
 
   async logout(user: any, res: Response, redirect = false): Promise<void> {
-    console.log('[auth.service.ts] logout() | user: ', user);
-
     // remove refreshToken from db
     await this.tokenService.invalidateTokens(user, res);
     console.log('[auth.service.ts] logout() | Successfully invalidated tokens.');
@@ -97,12 +91,13 @@ export class AuthService {
 
   async verifyUserRefreshToken(refreshToken: string, id: string) {
     try {
-      /*console.log('[auth.service] verifyUserRefreshToken() | userId: ', id);
-      console.log('[auth.service] verifyUserRefreshToken() | refreshToken:, ', refreshToken);*/
+      console.log('[auth.service] verifyUserRefreshToken() | userId: ', id);
+      console.log('[auth.service] verifyUserRefreshToken() | refreshToken:, ', refreshToken);
       const user = await this.usersService.getUser(id);
       const storedRefreshToken = await this.tokenService.getRefreshToken(id);
-      const authenticated = await compare(refreshToken, storedRefreshToken.token);
-      /*console.log('[auth.service.ts] verifyUserRefreshToken() | authenticated:', authenticated);*/
+      console.log(storedRefreshToken.token);
+      const authenticated = storedRefreshToken.token === refreshToken;
+      console.log('[auth.service] verifyUserRefreshToken() | authenticated:', authenticated);
       if (!authenticated) {
         throw new UnauthorizedException();
       }

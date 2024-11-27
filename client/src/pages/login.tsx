@@ -16,16 +16,13 @@ const Login = () => {
       const response = await api.post('/auth/login', { id: id, pw: password }, {
         withCredentials: true
         });
-      console.log(response);
       if (response.status === 201) {
-        console.log('Login successful:', response.data);
         alert('Login successful!');
         navigate('/dashboard');
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
-          console.log(error.response.data.message);
           alert("Login failed: "+JSON.stringify(error.response.data.message));
         }
       }

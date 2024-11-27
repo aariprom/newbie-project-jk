@@ -77,9 +77,9 @@ export class TokenService {
       expires: new Date(0),
     })
 
-    /*// remove refresh token from DB
+    // remove refresh token from DB
     console.log(user.id);
-    await this.removeRefreshToken(user.id);*/
+    await this.removeRefreshToken(user.id);
   }
 
   /*************** Refresh Token Management with DB ***************/

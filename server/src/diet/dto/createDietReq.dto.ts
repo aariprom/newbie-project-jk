@@ -1,22 +1,22 @@
-import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { IsDietType } from './validator/isDietType.validator';
 import { DietType } from '@prisma/client';
+import { Transform } from 'class-transformer';
 
-export class EditDietDto {
-  @IsOptional()
+export class CreateDietReqDto {
+  @IsNotEmpty()
   @IsArray()
-  foods?: number[];
+  foods: number[];
 
   @IsOptional()
   @IsString()
   memo?: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsDietType()
-  type?: DietType;
+  type: DietType;
 
-  /*
-  todo: maybe support editing date -> ask to overwrite if there already is diet in that date with same type
+
   @Transform(({ value }) => {
     const date = new Date(value); // Convert input to a Date object
     if (isNaN(date.getTime())) {
@@ -24,8 +24,6 @@ export class EditDietDto {
     }
     return date.toISOString(); // Convert to ISO format
   })
-  @IsOptional()
   @IsDate()
-  date?: Date;
-  */
+  date: Date;
 }
