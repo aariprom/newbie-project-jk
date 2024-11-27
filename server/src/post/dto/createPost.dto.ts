@@ -4,8 +4,4 @@ export class CreatePostDto {
   @IsNotEmpty()
   @IsString()
   content: string;
-
-  @IsOptional()
-  @IsArray()
-  pictures?: string[];
 }

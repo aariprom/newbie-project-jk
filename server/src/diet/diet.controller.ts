@@ -1,27 +1,51 @@
-import { Body, Controller, Delete, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { DietService } from './diet.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../auth/current-user.decorator';
+import { User } from '@prisma/client';
+import { EditDietDto } from './dto/editDiet.dto';
+import { CreateDietDto } from './dto/createDiet.dto';
 
 @Controller('diet')
 export class DietController {
   constructor(private readonly dietService: DietService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Post('/createDiet')
-  async createDiet(@Req() req: any, @Body() body: any) {
-    const userId = await req['payload'].userId;
-    return this.dietService.createDiet(userId, body);
+  @Post()
+  async createDiet(@CurrentUser() user: User, @Body() body: CreateDietDto) {
+    return this.dietService.createDiet(user.id, body);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('/editDiet/:dietId')
-  async editDiet(@Body() body: any, @Param('dietId') dietId: number) {
+  @Get()
+  async getDietOfUser(@CurrentUser() user: User) {
+    return this.dietService.getDietByUserId(user.id);
+  }
+
+  @Get('/:dietId')
+  async getDiet(@Param('dietId', ParseIntPipe) dietId: number) {
+    return this.dietService.getDietByDietId(dietId)
+  }
+
+  @Delete('/:dietId')
+  async deleteDiet(@Param('dietId', ParseIntPipe) dietId: number) {
+    return this.dietService.deleteDiet(dietId);
+  }
+
+  @Patch('/:dietId')
+  async editDiet(@Body() body: EditDietDto, @Param('dietId', ParseIntPipe) dietId: number) {
     return this.dietService.editDiet(body, dietId);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Delete('/deleteDiet/:dietId')
-  async deleteDiet(@Body() body: any, @Param('dietId') dietId: number) {
-    return this.dietService.deleteDiet(body);
+  @Post('/:dietId/foods/:foodId')
+  async addFoodInDiet(@Param('dietId', ParseIntPipe) dietId: number, @Param('foodId', ParseIntPipe) foodId: number) {
+    return this.dietService.addFoodInDiet(dietId, foodId);
+  }
+
+  @Delete('/:dietId/foods/:foodId')
+  async deleteFoodInDiet(@Param('dietId', ParseIntPipe) dietId: number, @Param('foodId', ParseIntPipe) foodId: number) {
+    return this.dietService.removeFoodInDiet(dietId, foodId);
+  }
+
+  @Get('/:dietId/stat')
+  async getDietStats(@CurrentUser() user: User, @Param('dietId', ParseIntPipe) dietId: number) {
+    return this.dietService.getDietStats(user.id, dietId);
   }
 }

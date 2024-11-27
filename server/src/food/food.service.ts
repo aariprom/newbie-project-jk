@@ -1,9 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { createFoodDto } from './dto/createFood.dto';
-import { validate } from 'class-validator';
-import { plainToInstance } from 'class-transformer';
-import { searchFoodRequestQueryDto } from './dto/searchFoodRequestQuery.dto';
+import { searchFoodQueryDto } from './dto/searchFoodQueryDto';
 
 @Injectable()
 export class FoodService {
@@ -11,16 +9,7 @@ export class FoodService {
 
   /* todo: consider performance issue */
   /* todo: filter custom food */
-  async search(searchParams: any) {
-    const validatedParams = plainToInstance(searchFoodRequestQueryDto, searchParams);
-    const validationErrors = await validate(validatedParams);
-    console.log('[food.service.ts] search() | searchParams: ', searchParams);
-
-    if (validationErrors.length > 0) {
-      console.log('[food.service.ts] search() | validationErrors: ', validationErrors);
-      throw new HttpException('Invalid request input for finding food.', HttpStatus.BAD_REQUEST);
-    }
-
+  async search(searchParams: searchFoodQueryDto) {
     const {
       name,
       type,
@@ -38,7 +27,7 @@ export class FoodService {
       minSodium,
       maxSodium,
       userId,
-    } = validatedParams;
+    } = searchParams;
 
     const whereClause: any = {};
 
@@ -128,14 +117,7 @@ export class FoodService {
 
   /* todo: load data of basic food as default value, and let user modify them */
   /* todo: it can be done by frontend */
-  async create(userId: string, data: any) {
-    const dataDto = plainToInstance(createFoodDto, data);
-    const validationErrors = await validate(dataDto);
-    console.log('[food.service.ts] create() | data: ', JSON.stringify(dataDto));
-    if (validationErrors.length > 0) {
-      console.log('[food.service.ts] create() | validationErrors: ', validationErrors);
-      throw new HttpException('Invalid request body for creating new food.', HttpStatus.BAD_REQUEST);
-    }
+  async create(userId: string, data: createFoodDto) {
     return this.prisma.food.create(
       {
         data: {
