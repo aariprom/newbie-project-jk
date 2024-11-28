@@ -52,12 +52,8 @@ export class JwtMiddleware implements NestMiddleware {
             secret: this.configService.getOrThrow('JWT_REFRESH_TOKEN_SECRET'),
           });
 
-          console.log('asdf');
-
           const userId = decodedRefreshToken.userId;
           const isValid = await this.authService.verifyUserRefreshToken(refreshToken, userId);
-
-          console.log('asdf');
 
           if (!isValid) {
             console.log('Invalid refresh token.');
@@ -73,8 +69,6 @@ export class JwtMiddleware implements NestMiddleware {
             secure: this.configService.get('NODE_ENV') === 'production',
             sameSite: 'strict',
           });
-
-          console.log('asdf');
 
           // Attach user info to the req for further processing
           req.user = { id: userId };
