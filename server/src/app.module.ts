@@ -32,7 +32,7 @@ import { UploadModule } from './upload/upload.module';
     UploadModule,
   ],
   controllers: [AppController, AuthController, PostController],
-  providers: [PostService, AppService, JwtService, PostService, PrismaService, TokenService,
+  providers: [PostService, AppService, JwtService, PrismaService, TokenService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

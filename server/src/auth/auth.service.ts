@@ -35,9 +35,9 @@ export class AuthService {
     const accessToken = this.tokenService.createAccessToken(user.id);
 
     // Store refresh token only if there is no refresh token in db
-    const refreshToken = await this.tokenService.getRefreshToken(user.id)
+    let refreshToken = await this.tokenService.getRefreshToken(user.id)
     if (!refreshToken) {
-      const refreshToken = this.tokenService.createRefreshToken(user.id);
+      refreshToken = this.tokenService.createRefreshToken(user.id);
       await this.tokenService.storeRefreshToken(refreshToken, user);
     }
 
@@ -63,8 +63,8 @@ export class AuthService {
     try {
       const user = await this.userService.getPassword(id);
       const authenticated = await compare(password, user.pw);
-      console.log('[auth.service.ts] verifyUser() | user: ', user);
-      console.log('[auth.service.ts] verifyUser() | authenticated:, ', authenticated);
+      /*console.log('[auth.service.ts] verifyUser() | user: ', user);
+      console.log('[auth.service.ts] verifyUser() | authenticated:, ', authenticated);*/
       if (!authenticated) {
         throw new UnauthorizedException();
       }

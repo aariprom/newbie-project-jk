@@ -35,6 +35,7 @@ export class searchFoodQueryDto {
   @IsNumber()
   @IsOptional()
   @Type(() => Number)
+  @Max(999999)
   maxCalories?: number;
 
   @ApiProperty({ required: false })
@@ -48,6 +49,7 @@ export class searchFoodQueryDto {
   @IsNumber()
   @IsOptional()
   @Type(() => Number)
+  @Max(999999)
   maxProtein?: number;
 
   @ApiProperty({ required: false })
@@ -61,6 +63,7 @@ export class searchFoodQueryDto {
   @IsNumber()
   @IsOptional()
   @Type(() => Number)
+  @Max(999999)
   maxCarbohydrates?: number;
 
   @ApiProperty({ required: false })
@@ -74,6 +77,7 @@ export class searchFoodQueryDto {
   @IsNumber()
   @IsOptional()
   @Type(() => Number)
+  @Max(999999)
   maxFat?: number;
 
   @ApiProperty({ required: false })
@@ -87,6 +91,7 @@ export class searchFoodQueryDto {
   @IsNumber()
   @IsOptional()
   @Type(() => Number)
+  @Max(999999)
   maxSugars?: number;
 
   @ApiProperty({ required: false })
@@ -100,6 +105,7 @@ export class searchFoodQueryDto {
   @IsNumber()
   @IsOptional()
   @Type(() => Number)
+  @Max(999999)
   maxSodium?: number;
 
   @ApiProperty({ required: false })
