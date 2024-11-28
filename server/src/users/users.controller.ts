@@ -62,7 +62,9 @@ export class UsersController {
 
   @Get('/:userId/profile')
   async getProfile(@CurrentUser() user: User, @Param('userId') userId: string) {
-    return this.userService.getUserProfile(user.id, userId);
+    const data = await this.userService.getUserProfile(user.id, userId);
+    console.log(data);
+    return data;
   }
 
   /*@Get('/:userId/post')

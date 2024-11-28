@@ -106,6 +106,9 @@ export class TokenService {
         token: true,
       }
     })
+    if (!token) {
+      return null;
+    }
     return token.token;
   }
 

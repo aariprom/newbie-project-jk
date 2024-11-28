@@ -25,8 +25,8 @@ export class FoodController {
   }
 
   @Delete('/:foodId')
-  async delete(@Param('foodId', ParseIntPipe) foodId: number) {
-    return this.foodService.delete(foodId);
+  async delete(@CurrentUser() user: User, @Param('foodId', ParseIntPipe) foodId: number) {
+    return this.foodService.delete(user.id, foodId);
   }
 
   @Get('/fav')

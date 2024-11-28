@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/createPost.dto';
 import { PrismaService } from '../prisma.service';
 import { EditPostDto } from './dto/editPost.dto';
@@ -75,10 +75,18 @@ export class PostService {
   }
 
   async linkPicToPost(urls: string[], postId: number) {
+    const post = await this.prisma.post.findUnique({
+      where: {
+        id: postId,
+      }
+    });
+    if (!post) {
+      throw new BadRequestException('No post found.');
+    }
     return this.prisma.picture.createMany({
       data: urls.map((url) => ({
-        url,
-        postId,
+        url: url,
+        postId: postId,
       })),
       skipDuplicates: true,
     });
@@ -102,13 +110,16 @@ export class PostService {
         }
       },
     });
+    if (!posts) {
+      return null;
+    }
     return (posts.map(post => new PostResDto(post)));
   }
 
   async getPostByPostId(postId: number) {
     const post = await this.prisma.post.findUnique({
       where: {
-        id: Number(postId),
+        id: postId,
       },
       select: {
         id: true,
@@ -123,6 +134,9 @@ export class PostService {
         },
       },
     });
+    if (!post) {
+      throw new BadRequestException('No post found');
+    }
     return new PostResDto(post);
   }
 

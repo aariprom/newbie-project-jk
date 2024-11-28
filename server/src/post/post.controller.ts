@@ -64,13 +64,13 @@ export class PostController {
   }
 
   @Patch('/edit/:postId')
-  async editPost(@Param('postId') postId: number, @Body() body: EditPostDto) {
+  async editPost(@Param('postId', ParseIntPipe) postId: number, @Body() body: EditPostDto) {
     return this.postService.editPost(postId, body);
   }
 
   @Get('/:postId')
   @Public()
-  async getPost(@Param('postId') postId: number) {
+  async getPost(@Param('postId', ParseIntPipe) postId: number) {
     return this.postService.getPostByPostId(postId);
   }
 
