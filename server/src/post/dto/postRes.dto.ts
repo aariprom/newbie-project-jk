@@ -24,7 +24,7 @@ export class PostResDto {
   modifiedDate: Date;
 
   @IsOptional()
-  @IsArray()
+  @IsArray()  
   @Transform(({ value }) => {
     return value.map(((picture: { url: string; }) => picture.url))
   })

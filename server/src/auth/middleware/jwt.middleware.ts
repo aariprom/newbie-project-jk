@@ -1,17 +1,17 @@
-import { HttpException, HttpStatus, Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction, } from 'express';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { TokenService } from '../token/token.service';
+import { Injectable, NestMiddleware } from '@nestjs/common';
+import { NextFunction, Request, Response } from 'express';
 
 @Injectable()
 export class JwtMiddleware implements NestMiddleware {
-  constructor(private readonly jwtService: JwtService,
-              private readonly configService: ConfigService,
-              private readonly tokenService: TokenService,) {}
-
   use(req: Request, res: Response, next: NextFunction) {
-    next();
+    try {
+      console.log('[jwt.middleware] Request cookie: ', req.cookies);
+      console.log('[jwt.middleware] JWT Authentication:', req.cookies?.Authentication);
+      console.log('[jwt.middleware] JWT Refresh:', req.cookies?.Refresh);
+    } catch (e) {
+      console.log('[jwt.middleware] error occurred: ', e);
+    } finally {
+      next();
+    }
   }
 }
-

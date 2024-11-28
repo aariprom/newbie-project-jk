@@ -1,6 +1,6 @@
 import {
   Controller, Get, Post, Delete, Body, Param, UseInterceptors,
-  ParseIntPipe, BadRequestException, UploadedFiles,
+  ParseIntPipe, BadRequestException, UploadedFiles, Patch,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { User } from '@prisma/client';
@@ -43,7 +43,7 @@ export class PostController {
   }))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Upload multiple profile images',
+    description: 'Upload multiple images',
     type: UploadImagesReqDto,
   })
   async uploadPostImages(@UploadedFiles() files: Express.Multer.File[], @Param('postId', ParseIntPipe) postId: number) {
@@ -61,7 +61,7 @@ export class PostController {
     return this.postService.deletePostByUserId(user.id);
   }
 
-  @Post('/edit/:postId')
+  @Patch('/edit/:postId')
   async editPost(@Param('postId') postId: number, @Body() body: EditPostDto) {
     return this.postService.editPost(postId, body);
   }

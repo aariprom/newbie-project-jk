@@ -34,7 +34,6 @@ export class DietService {
           }
         },
         type: true,
-        memo: true,
         date: true
       }
     });
@@ -64,7 +63,6 @@ export class DietService {
           }
         },
         type: true,
-        memo: true,
         date: true,
       }
     });
@@ -85,7 +83,6 @@ export class DietService {
           }
         },
         type: true,
-        memo: true,
         date: true,
       },
     });
@@ -106,7 +103,6 @@ export class DietService {
           }
         },
         type: true,
-        memo: true,
         date: true,
       },
     });

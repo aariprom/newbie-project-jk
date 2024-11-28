@@ -10,11 +10,6 @@ export class EditDietDto {
   @IsArray()
   foods?: number[];
 
-  @ApiProperty({ description: "Optional memo about this diet.", example: "memo" })
-  @IsOptional()
-  @IsString()
-  memo?: string;
-
   @ApiProperty({ description: "BREAKFAST | LUNCH | DINNER | OTHERS", example: "BREAKFAST" })
   @IsOptional()
   @IsDietType()

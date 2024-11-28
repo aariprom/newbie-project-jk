@@ -8,17 +8,19 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     const response = host.switchToHttp().getResponse<Response>();
     const status = exception instanceof Prisma.PrismaClientKnownRequestError ? 400 : 500;
 
-    let message = 'An error occurred';
+    let message = 'An error occurred while handling database operation: ';
 
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       // Handle specific error codes from Prisma
       if (exception.code === 'P2002') {
-        message = 'Unique constraint failed';
+        message += 'Unique constraint failed.';
+      } else if (exception.code === 'P2003') {
+        message += 'Foreign key constraint failed.';
       } else {
-        message = exception.message;
+        message += 'Bad request for accessing prisma database.'
       }
     } else if (exception instanceof Prisma.PrismaClientValidationError) {
-      message = 'Prisma validation error';
+      message += 'Validation failed.';
     }
 
     response.status(status).json({

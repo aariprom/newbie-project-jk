@@ -23,36 +23,42 @@ export class createFoodDto {
   @ApiProperty()
   @IsNumber()
   @IsOptional()
+  @Max(999999)
   @Min(0)
   calories?: number
 
   @ApiProperty()
   @IsNumber()
   @IsOptional()
+  @Max(999999)
   @Min(0)
   protein?: number
 
   @ApiProperty()
   @IsNumber()
   @IsOptional()
+  @Max(999999)
   @Min(0)
   carbohydrates?: number
 
   @ApiProperty()
   @IsNumber()
   @IsOptional()
+  @Max(999999)
   @Min(0)
   fat?: number
 
   @ApiProperty()
   @IsNumber()
   @IsOptional()
+  @Max(999999)
   @Min(0)
   sugars?: number
 
   @ApiProperty()
   @IsNumber()
   @IsOptional()
+  @Max(999999)
   @Min(0)
   sodium?: number
 }
