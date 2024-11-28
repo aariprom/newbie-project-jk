@@ -14,12 +14,10 @@ import { PostController } from './post/post.controller';
 import { PostModule } from './post/post.module';
 import { DietModule } from './diet/diet.module';
 import { PrismaService } from './prisma.service';
-import { S3Module } from './S3/s3.module';
 import { TokenService } from './auth/token/token.service';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import { TokenModule } from './auth/token/token.module';
-import { TokenInterceptor } from './token.interceptor';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -31,17 +29,13 @@ import { TokenInterceptor } from './token.interceptor';
     FavFoodModule,
     PostModule,
     DietModule,
-    S3Module,
+    UploadModule,
   ],
   controllers: [AppController, AuthController, PostController],
   providers: [PostService, AppService, JwtService, PostService, PrismaService, TokenService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: TokenInterceptor,
     },],
 })
 export class AppModule implements NestModule {

@@ -3,14 +3,14 @@ import { DietService } from './diet.service';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { User } from '@prisma/client';
 import { EditDietDto } from './dto/editDiet.dto';
-import { CreateDietDto } from './dto/createDiet.dto';
+import { CreateDietReqDto } from './dto/createDietReq.dto';
 
 @Controller('diet')
 export class DietController {
   constructor(private readonly dietService: DietService) {}
 
   @Post()
-  async createDiet(@CurrentUser() user: User, @Body() body: CreateDietDto) {
+  async createDiet(@CurrentUser() user: User, @Body() body: CreateDietReqDto) {
     return this.dietService.createDiet(user.id, body);
   }
 

@@ -1,14 +1,14 @@
-import { IsArray, IsDate, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsDateString, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { IsDietType } from './validator/isDietType.validator';
 import { DietType } from '@prisma/client';
-import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class EditDietDto {
+export class CreateDietReqDto {
   @ApiProperty({ description: "Array of id of foods belong to this diet.", example: "[1, 22, 30]" })
-  @IsOptional()
+  @IsNotEmpty()
   @IsArray()
-  foods?: number[];
+  foods: number[];
 
   @ApiProperty({ description: "Optional memo about this diet.", example: "memo" })
   @IsOptional()
@@ -16,9 +16,10 @@ export class EditDietDto {
   memo?: string;
 
   @ApiProperty({ description: "BREAKFAST | LUNCH | DINNER | OTHERS", example: "BREAKFAST" })
-  @IsOptional()
+  @IsNotEmpty()
   @IsDietType()
-  type?: DietType;
+  type: DietType;
+
 
   @ApiProperty({ description: "YYYY-MM-DD", example: "2024-12-02" })
   @Transform(({ value }) => {
@@ -28,7 +29,6 @@ export class EditDietDto {
     }
     return date.toISOString(); // Convert to ISO format
   })
-  @IsOptional()
-  @IsDate()
-  date?: Date;
+  @IsDateString()
+  date: Date;
 }

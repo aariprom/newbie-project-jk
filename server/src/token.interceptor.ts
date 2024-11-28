@@ -1,11 +1,4 @@
-import {
-  Injectable,
-  ExecutionContext,
-  CallHandler,
-  NestInterceptor,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { CallHandler, ExecutionContext, HttpException, HttpStatus, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth/auth.service';
@@ -62,8 +55,12 @@ export class TokenInterceptor implements NestInterceptor {
           secret: this.configService.getOrThrow('JWT_REFRESH_TOKEN_SECRET'),
         });
 
+        console.log('asdf');
+
         const userId = decodedRefreshToken.userId;
         const isValid = await this.authService.verifyUserRefreshToken(refreshToken, userId);
+
+        console.log('asdf');
 
         if (!isValid) {
           console.log('Invalid refresh token.');
@@ -80,12 +77,14 @@ export class TokenInterceptor implements NestInterceptor {
           sameSite: 'strict',
         });
 
+        console.log('asdf');
+
         // Attach user info to the request for further processing
         request.user = { id: userId };
         return next.handle();
       } catch (refreshError) {
         console.log('Error while refreshing token.')
-        throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+        throw new HttpException('Unauthorized, Please remove cookies and login again.', HttpStatus.UNAUTHORIZED);
       }
     }
   }

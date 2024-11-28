@@ -1,15 +1,13 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
-import { FoodIdDTO } from '../dto/foodIdDTO';
-import { plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
+import { FoodResDto } from '../dto/foodRes.dto';
 
 @Injectable()
 export class FavFoodService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createFavFood(userId: string, foodId: number): Promise<any> {
-    return this.prisma.favoriteFood.create({
+    const food = await this.prisma.favoriteFood.create({
       data: {
         User: {
           connect: { id: userId },
@@ -18,7 +16,21 @@ export class FavFoodService {
           connect: { id: foodId },
         },
       },
+      select: {
+        Food: {
+          select: {
+            id: true,
+            calories: true,
+            carbohydrates: true,
+            protein: true,
+            fat: true,
+            sugars: true,
+            sodium: true,
+          }
+        }
+      }
     });
+    return new FoodResDto(food.Food);
   }
 
   async deleteFavFood(userId: string, foodId: number) {
@@ -32,13 +44,24 @@ export class FavFoodService {
   }
 
   async getFavFood(userId: string) {
-    return this.prisma.favoriteFood.findMany({
+    const foods = await this.prisma.favoriteFood.findMany({
       where: {
         userId: userId,
       },
-      include: {
-        Food: true
+      select: {
+        Food: {
+          select: {
+            id: true,
+            calories: true,
+            carbohydrates: true,
+            protein: true,
+            fat: true,
+            sugars: true,
+            sodium: true,
+          }
+        }
       },
     });
+    return foods.map(food => new FoodResDto(food.Food));
   }
 }
