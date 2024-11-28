@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @unique
+  pw            String
+  email         String
+  createdDate   DateTime
+  modifiedDate  DateTime
+  profilePicUrl String?
+  diets         Diet[]
+  customFoods   Food[]
+  posts         Post[]
+  favoriteFoods FavoriteFood[]
+  RefreshToken  RefreshToken?
+}
+
+model Food {
+  id            Int            @id @default(autoincrement())
+  user          User?          @relation(fields: [userId], references: [id])
+  userId        String?
+  name          String
+  type          FoodType
+  category      Int?
+  carbohydrates Int?
+  fat           Int?
+  protein       Int?
+  sugars        Int?
+  calories      Int?
+  sodium        Int?
+  favoriteFoods FavoriteFood[]
+  FoodsInDiet   FoodsInDiet[]
+}
+
+model FavoriteFood {
+  User   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  Food   Food?  @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  foodId Int
+
+  @@unique([userId, foodId])
+}
+
+model Diet {
+  id     Int           @id @default(autoincrement())
+  user   User          @relation(fields: [userId], references: [id])
+  userId String
+  foods  FoodsInDiet[]
+  memo   String?
+  type   DietType
+  date   DateTime
+}
+
+model FoodsInDiet {
+  diet   Diet @relation(fields: [dietId], references: [id], onDelete: Cascade)
+  dietId Int
+  food   Food @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  foodId Int
+
+  @@unique([dietId, foodId])
+}
+
+model Picture {
+  id     Int    @id @default(autoincrement())
+  post   Post?  @relation(fields: [postId], references: [id])
+  postId Int?
+  url    String
+}
+
+model Post {
+  id           Int       @id @default(autoincrement())
+  user         User      @relation(fields: [userId], references: [id])
+  userId       String
+  content      String?
+  pictures     Picture[]
+  createdDate  DateTime
+  modifiedDate DateTime
+}
+
+model RefreshToken {
+  token  String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+}
+
+enum DietType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  OTHERS
+}
+
+enum FoodType {
+  P // product
+  D // dish
+}

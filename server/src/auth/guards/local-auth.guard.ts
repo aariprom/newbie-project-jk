@@ -3,7 +3,7 @@ import { AuthGuard } from "@nestjs/passport";
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
-  /*handleRequest(err, user, info, context, status) {
+  handleRequest(err, user, info, context, status) {
     const request = context.switchToHttp().getRequest();
     const { id, password } = request.body;
     if (err || !user) {
@@ -14,5 +14,5 @@ export class LocalAuthGuard extends AuthGuard('local') {
       }
     }
     return user;
-  }*/
+  }
 }

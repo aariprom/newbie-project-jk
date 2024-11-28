@@ -1,12 +1,13 @@
-import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { CurrentUser } from './current-user.decorator';
 import { User } from '@prisma/client';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
+import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
+import { PublicGuard } from './guards/public.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { CreateUserDto } from './dto/createUser.dto';
+import { createUserDto } from './dto/createUserDto';
 import { Public } from './public.decorator';
-import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -14,15 +15,18 @@ export class AuthController {
 
   @Post('/signup')
   @Public()
-  async signup(@Body() body: CreateUserDto): Promise<User> {
+  async createUser(@Body() body: createUserDto): Promise<User> {
     return this.authService.createUser(body);
   }
 
   @Post('/login')
   @UseGuards(LocalAuthGuard)
-  async login(@Body() body: LoginDto, @Res({ passthrough: true }) res: Response) {
-    await this.authService.login(body, res);
-    return 'Login successful.';
+  async login(
+    @CurrentUser() user: User,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    await this.authService.login(user, res);
+    return res.json({ message: 'Login successful.' });
   }
 
   @Post('/logout')
@@ -30,14 +34,22 @@ export class AuthController {
     @CurrentUser() user: User,
     @Res({ passthrough: true }) res: Response,
   ) {
-    console.log('logout')
     await this.authService.logout(user, res);
-    return 'Logout successful.';
+    return res.json({ message: 'Logout successful.' });
   }
 
   @Get('/authCheck')
   @Public()
   async authCheck(@CurrentUser() user: User) {
     return this.authService.authCheck(user);
+  };
+
+  @Post('/refresh')
+  @UseGuards(JwtRefreshAuthGuard)
+  async refreshToken(
+    @CurrentUser() user: User,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    return await this.authService.login(user, response);
   }
 }

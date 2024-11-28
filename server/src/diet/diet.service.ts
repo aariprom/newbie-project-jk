@@ -1,17 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateDietReqDto } from './dto/createDietReq.dto';
+import { plainToInstance } from 'class-transformer';
+import { CreateDietDto } from './dto/createDiet.dto';
 import { PrismaService } from '../prisma.service';
 import { DailyConsumeService } from './dailyConsume.service';
-import { DietResDto } from './dto/dietRes.dto';
-import { FoodInDietResDto } from './dto/foodInDietRes.dto';
 
 @Injectable()
 export class DietService {
   constructor(private readonly prisma: PrismaService,
               private readonly dailyConsumeService: DailyConsumeService,) {}
 
-  async createDiet(userId: string, data: CreateDietReqDto) {
-    const diet = await this.prisma.diet.create({
+  async createDiet(userId: string, data: CreateDietDto) {
+    return this.prisma.diet.create({
       data: {
         ...data,
         foods: {
@@ -24,25 +23,12 @@ export class DietService {
             id: userId,
           }
         }
-      },
-      select: {
-        id: true,
-        userId: true,
-        foods: {
-          select: {
-            foodId: true,
-          }
-        },
-        type: true,
-        memo: true,
-        date: true
       }
     });
-    return new DietResDto(diet);
   }
 
   async deleteDiet(dietId: number) {
-    return this.prisma.diet.delete({
+    return this.prisma.diet.deleteMany({
       where: {
         id: dietId,
       }
@@ -50,77 +36,44 @@ export class DietService {
   }
 
   async editDiet(data: any, dietId: number) {
-    const diet = await this.prisma.diet.update({
+    return this.prisma.diet.updateMany({
       where: {
         id: dietId,
       },
       data: data,
-      select: {
-        id: true,
-        userId: true,
-        foods: {
-          select: {
-            foodId: true,
-          }
-        },
-        type: true,
-        memo: true,
-        date: true,
-      }
-    });
-    return new DietResDto(diet);
-  }
+    })
+  };
 
   async getDietByUserId(userId: string) {
-    const diets = await this.prisma.diet.findMany({
+    return this.prisma.diet.findMany({
       where: {
         userId: userId,
       },
-      select: {
-        id: true,
-        userId: true,
-        foods: {
-          select: {
-            foodId: true,
-          }
-        },
-        type: true,
-        memo: true,
-        date: true,
-      },
+      include: {
+        foods: true,
+
+      }
     });
-    return diets.map(diet => new DietResDto(diet));
   }
 
   async getDietByDietId(dietId: number) {
-    const diet = await this.prisma.diet.findUnique({
+    return this.prisma.diet.findUnique({
       where: {
         id: dietId,
       },
-      select: {
-        id: true,
-        userId: true,
-        foods: {
-          select: {
-            foodId: true,
-          }
-        },
-        type: true,
-        memo: true,
-        date: true,
+      include: {
+        foods: true,
       },
-    });
-    return new DietResDto(diet);
+    })
   }
 
   async addFoodInDiet(dietId: number, foodId: number) {
-    const food = await this.prisma.foodsInDiet.create({
+    return this.prisma.foodsInDiet.create({
       data: {
         dietId: dietId,
         foodId: foodId,
       },
     });
-    return new FoodInDietResDto(food);
   }
 
   async removeFoodInDiet(dietId: number, foodId: number) {

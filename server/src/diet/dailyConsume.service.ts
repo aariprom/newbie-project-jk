@@ -1,4 +1,7 @@
+import { UsersService } from "../users/users.service"
 import { PrismaService } from '../prisma.service';
+import { ConfigService } from '@nestjs/config';
+import { Sex } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

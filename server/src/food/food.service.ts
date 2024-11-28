@@ -1,13 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { createFoodDto } from './dto/createFood.dto';
 import { searchFoodQueryDto } from './dto/searchFoodQueryDto';
-import { FoodResDto } from './dto/foodRes.dto';
 
 @Injectable()
 export class FoodService {
   constructor(private readonly prisma: PrismaService) {};
 
+  /* todo: consider performance issue */
+  /* todo: filter custom food */
   async search(searchParams: searchFoodQueryDto) {
     const {
       name,
@@ -107,35 +108,23 @@ export class FoodService {
       whereClause.userId = userId;
     }
 
-    const foods = await this.prisma.food.findMany({
-      where: whereClause,
-      select: {
-        id: true,
-        calories: true,
-        carbohydrates: true,
-        protein: true,
-        fat: true,
-        sugars: true,
-        sodium: true,
-      }
-    });
-
-    return foods.map(food => new FoodResDto(food));
+    return this.prisma.food.findMany({ where: whereClause });
   }
 
   async reset() {
     return this.prisma.food.deleteMany();
   }
 
+  /* todo: load data of basic food as default value, and let user modify them */
+  /* todo: it can be done by frontend */
   async create(userId: string, data: createFoodDto) {
-    const food = await this.prisma.food.create(
+    return this.prisma.food.create(
       {
         data: {
           ...data, userId: userId,
         }
       }
     );
-    return new FoodResDto(food);
   }
 
   async delete(foodId: number): Promise<any> {

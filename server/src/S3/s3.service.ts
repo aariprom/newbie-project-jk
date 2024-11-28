@@ -43,7 +43,7 @@ export class S3Service {
         }),
       );
       return `https://${this.bucketName}.s3.${this.configService.get<string>(
-        'S3_REGION',
+        'AWS_REGION',
       )}.amazonaws.com/${fileName}`;
     } catch (error) {
       console.error('Error uploading file to S3', error);

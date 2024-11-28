@@ -11,6 +11,8 @@ export class JwtMiddleware implements NestMiddleware {
               private readonly tokenService: TokenService,) {}
 
   use(req: Request, res: Response, next: NextFunction) {
+    console.log('[jwt.middleware] Request cookie: ', req.cookies);
+    console.log('[jwt.middleware] JWT Token:', req.cookies?.Authentication);
     next();
   }
 }
