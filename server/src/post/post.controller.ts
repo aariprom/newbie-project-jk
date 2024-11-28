@@ -18,9 +18,11 @@ export class PostController {
   constructor(private readonly postService: PostService,
               private readonly uploadService: UploadService,) {}
 
-  @Post()
-  async createPost(@CurrentUser() user: User, @Body() body: CreatePostDto) {
-    return this.postService.createPost(user.id, body);
+  @Post('/:dietId')
+  async createPost(@CurrentUser() user: User,
+                   @Param('dietId', ParseIntPipe) dietId: number,
+                   @Body() body: CreatePostDto) {
+    return this.postService.createPost(user.id, dietId, body);
   }
 
   @Delete('/:postId')
@@ -43,7 +45,7 @@ export class PostController {
   }))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Upload multiple images',
+    description: 'Upload multiple images.',
     type: UploadImagesReqDto,
   })
   async uploadPostImages(@UploadedFiles() files: Express.Multer.File[], @Param('postId', ParseIntPipe) postId: number) {
@@ -62,13 +64,13 @@ export class PostController {
   }
 
   @Patch('/edit/:postId')
-  async editPost(@Param('postId') postId: number, @Body() body: EditPostDto) {
+  async editPost(@Param('postId', ParseIntPipe) postId: number, @Body() body: EditPostDto) {
     return this.postService.editPost(postId, body);
   }
 
   @Get('/:postId')
   @Public()
-  async getPost(@Param('postId') postId: number) {
+  async getPost(@Param('postId', ParseIntPipe) postId: number) {
     return this.postService.getPostByPostId(postId);
   }
 

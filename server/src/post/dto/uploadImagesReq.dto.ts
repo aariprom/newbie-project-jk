@@ -5,7 +5,7 @@ export class UploadImagesReqDto {
   @ApiProperty({
     type: 'string',
     format: 'binary',
-    description: 'Upload image files',
+    description: 'image files',
     isArray: true,
   })
   @IsArray()

@@ -1,12 +1,12 @@
 import { PrismaService } from '../prisma.service';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DailyConsumeService {
   constructor(private readonly prisma: PrismaService) {};
 
   async userData(userId: string) {
-    return this.prisma.user.findUnique({
+    const data = await this.prisma.user.findUnique({
       where: {
         id: userId,
       },
@@ -18,6 +18,11 @@ export class DailyConsumeService {
         level: true,
       }
     });
+    if (!data) {
+      throw new BadRequestException('User not found.');
+    } else {
+      return data;
+    }
   };
 
   async refStat(userId: string) {

@@ -42,16 +42,23 @@ export class UserResDto {
   @IsString()
   profilePicUrl: string;
 
-  constructor(partial: Partial<User>, isOwnerOrPublic: boolean) {
+  privateProfile: boolean;
+
+  constructor(partial: Partial<User>, isOwner: boolean, isPrivate: boolean) {
     Object.assign(this, partial);
 
-    if (isOwnerOrPublic) {
-      this.email = partial.email;
-      this.age = partial.age;
-      this.height = partial.height;
-      this.weight = partial.weight;
-      this.sex = partial.sex;
-      this.level = partial.level;
+    if (!isOwner) {
+      delete this.privateProfile;
+      delete this.createdDate;
+    }
+
+    if (!isOwner && isPrivate) {
+      delete this.email;
+      delete this.age;
+      delete this.height;
+      delete this.weight;
+      delete this.sex;
+      delete this.level;
     }
   }
 }

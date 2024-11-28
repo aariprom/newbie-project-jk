@@ -1,14 +1,6 @@
 import {
-  BadRequestException,
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  UploadedFiles,
-  UseInterceptors,
+  BadRequestException, Body, Controller, Delete, Get, Param,
+  Patch, Post, UploadedFile, UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -48,13 +40,19 @@ export class UsersController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Upload profile image.',
-    type: UploadImageReqDto, // Define a DTO for Swagger documentation
+    type: UploadImageReqDto,
   })
-  async uploadProfileImage(@UploadedFiles() file: Express.Multer.File) {
+  async uploadProfileImage(
+    @CurrentUser() user: User,
+    @UploadedFile() file: Express.Multer.File
+  ) {
     if (!file) {
+      console.log(file);
       throw new BadRequestException('No files uploaded');
     }
-    return await this.uploadService.uploadUserProfileImage(file);
+    const url = await this.uploadService.uploadUserProfileImage(file);
+    const data = { profilePicUrl: url };
+    return this.userService.editProfile(user.id, data)
   }
 
   @Delete('/delete-account')
@@ -64,7 +62,7 @@ export class UsersController {
 
   @Get('/:userId/profile')
   async getProfile(@CurrentUser() user: User, @Param('userId') userId: string) {
-    return this.userService.getUserProfile(user.id, userId);
+    return await this.userService.getUserProfile(user.id, userId);
   }
 
   /*@Get('/:userId/post')

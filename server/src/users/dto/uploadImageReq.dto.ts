@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class UploadImageReqDto {
   @ApiProperty({
-    description: 'image file',
+    type: 'string',
+    format: 'binary',
+    description: 'An image file for profile pic.',
   })
   @IsNotEmpty()
-  @Type(() => String)
   file: any;
 }

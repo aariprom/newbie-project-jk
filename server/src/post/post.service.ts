@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/createPost.dto';
 import { PrismaService } from '../prisma.service';
 import { EditPostDto } from './dto/editPost.dto';
@@ -8,7 +8,7 @@ import { PostResDto } from './dto/postRes.dto';
 export class PostService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createPost(userId: string, data: CreatePostDto) {
+  async createPost(userId: string, dietId: number, data: CreatePostDto) {
     const post = await this.prisma.post.create({
       data: {
         ...data,
@@ -17,6 +17,11 @@ export class PostService {
         user: {
           connect: {
             id: userId,
+          }
+        },
+        diet: {
+          connect: {
+            id: dietId,
           }
         }
       },
@@ -29,6 +34,23 @@ export class PostService {
         pictures: {
           select: {
             url: true,
+          }
+        },
+        diet: {
+          select: {
+            id: true,
+            type: true,
+            date: true,
+            foods: {
+              select: {
+                food: {
+                  select: {
+                    id: true,
+                    name: true,
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -53,10 +75,18 @@ export class PostService {
   }
 
   async linkPicToPost(urls: string[], postId: number) {
+    const post = await this.prisma.post.findUnique({
+      where: {
+        id: postId,
+      }
+    });
+    if (!post) {
+      throw new BadRequestException('No post found.');
+    }
     return this.prisma.picture.createMany({
       data: urls.map((url) => ({
-        url,
-        postId,
+        url: url,
+        postId: postId,
       })),
       skipDuplicates: true,
     });
@@ -80,13 +110,16 @@ export class PostService {
         }
       },
     });
+    if (!posts) {
+      return null;
+    }
     return (posts.map(post => new PostResDto(post)));
   }
 
   async getPostByPostId(postId: number) {
     const post = await this.prisma.post.findUnique({
       where: {
-        id: Number(postId),
+        id: postId,
       },
       select: {
         id: true,
@@ -101,6 +134,9 @@ export class PostService {
         },
       },
     });
+    if (!post) {
+      throw new BadRequestException('No post found');
+    }
     return new PostResDto(post);
   }
 

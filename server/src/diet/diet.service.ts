@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateDietReqDto } from './dto/createDietReq.dto';
 import { PrismaService } from '../prisma.service';
 import { DailyConsumeService } from './dailyConsume.service';
@@ -106,6 +106,9 @@ export class DietService {
         date: true,
       },
     });
+    if (!diet) {
+      throw new BadRequestException('Diet not found.');
+    }
     return new DietResDto(diet);
   }
 
@@ -141,6 +144,10 @@ export class DietService {
         }
       },
     });
+
+    if (!foods) {
+      throw new BadRequestException('Diet not found.');
+    }
 
     const stat = {
       calories: 0,

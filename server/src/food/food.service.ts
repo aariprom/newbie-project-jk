@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { createFoodDto } from './dto/createFood.dto';
 import { searchFoodQueryDto } from './dto/searchFoodQueryDto';
@@ -138,12 +138,22 @@ export class FoodService {
     return new FoodResDto(food);
   }
 
-  async delete(foodId: number): Promise<any> {
-    return this.prisma.food.delete({
+  async delete(userId: string, foodId: number): Promise<any> {
+    const food = await this.prisma.food.findUnique({
       where: {
         id: foodId,
       }
-    })
+    });
+    if (food.userId === userId) {
+      return this.prisma.food.delete({
+        where: {
+          id: foodId,
+        }
+      });
+    } else if (!food) {
+      throw new BadRequestException('Food not found.');
+    } else {
+      throw new UnauthorizedException('You cannot delete a food that is not created by you.');
+    }
   }
-
 }

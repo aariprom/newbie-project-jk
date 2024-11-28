@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { EditUserProfileDto } from './dto/editUserProfile.dto';
 import { UserResDto } from './dto/userRes.dto';
@@ -29,7 +29,7 @@ export class UserService {
         privateProfile: true,
       },
     });
-    return new UserResDto(user, user.privateProfile);
+    return new UserResDto(user, true, user.privateProfile);
   }
 
   async getUserProfile(userId: string, targetUserId: string) {
@@ -51,7 +51,11 @@ export class UserService {
       },
     });
 
-    return new UserResDto(user, user.privateProfile || userId === targetUserId);
+    if (!user) {
+      throw new BadRequestException('User not found.');
+    }
+
+    return new UserResDto(user, userId === targetUserId, user.privateProfile);
   }
 
   async deleteUser(userId: string) {

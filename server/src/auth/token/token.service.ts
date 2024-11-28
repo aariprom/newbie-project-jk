@@ -97,7 +97,7 @@ export class TokenService {
     })
   }
 
-  async getRefreshToken(userId: string): Promise<any> {
+  async getRefreshToken(userId: string) {
     const token = await this.prisma.refreshToken.findUnique({
       where: {
         userId: userId,
@@ -106,6 +106,9 @@ export class TokenService {
         token: true,
       }
     })
+    if (!token) {
+      return null;
+    }
     return token.token;
   }
 

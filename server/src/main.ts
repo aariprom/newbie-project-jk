@@ -9,15 +9,18 @@ import { PrismaExceptionFilter } from './prisma-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = new ConfigService();
   /* swagger */
-  const config = new DocumentBuilder()
-    .setTitle('Newbie Project by JK')
-    .setDescription('SPARCS 2024F Newbie Project')
-    .setVersion('1.0')
-    .addTag('')
-    .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  if (configService.get('NODE_ENV') !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('API Documentation')
+      .setDescription('The API description')
+      .setVersion('1.0')
+      .addTag('cats')
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document); // '/api' is the Swagger UI endpoint
+  }
   /* validation pipe */
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
@@ -25,7 +28,6 @@ async function bootstrap() {
     transform: true,
   }));
   /* jwt cookie parser */
-  const configService = new ConfigService();
   app.use(cookieParser(configService.getOrThrow('JWT_ACCESS_TOKEN_SECRET')));
   /* CORS policy */
   app.enableCors({

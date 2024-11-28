@@ -7,7 +7,7 @@ export class FavFoodService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createFavFood(userId: string, foodId: number): Promise<any> {
-    const food = await this.prisma.favoriteFood.create({
+    const food = await this.prisma.favFood.create({
       data: {
         User: {
           connect: { id: userId },
@@ -34,7 +34,7 @@ export class FavFoodService {
   }
 
   async deleteFavFood(userId: string, foodId: number) {
-    return this.prisma.favoriteFood.deleteMany({
+    return this.prisma.favFood.deleteMany({
       where:
         {
           userId: userId,
@@ -44,7 +44,7 @@ export class FavFoodService {
   }
 
   async getFavFood(userId: string) {
-    const foods = await this.prisma.favoriteFood.findMany({
+    const foods = await this.prisma.favFood.findMany({
       where: {
         userId: userId,
       },
