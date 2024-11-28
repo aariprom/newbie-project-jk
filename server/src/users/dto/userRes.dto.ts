@@ -1,7 +1,7 @@
 import { IsDate, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { IsSex } from './validator/sex.validator';
 import { Sex, User } from '@prisma/client';
-import { Expose } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 
 export class UserResDto {
   @Expose()
@@ -42,6 +42,8 @@ export class UserResDto {
   @IsString()
   profilePicUrl: string;
 
+  privateProfile: boolean;
+
   constructor(partial: Partial<User>, isOwnerOrPublic: boolean) {
     Object.assign(this, partial);
 
@@ -53,5 +55,6 @@ export class UserResDto {
       this.sex = partial.sex;
       this.level = partial.level;
     }
+    delete this.privateProfile;
   }
 }

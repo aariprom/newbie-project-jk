@@ -1,7 +1,15 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreatePostDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  content: string;
+  title?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isPublic?: boolean;
+
+  @IsOptional()
+  @IsString()
+  content?: string;
 }

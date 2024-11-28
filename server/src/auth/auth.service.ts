@@ -75,6 +75,7 @@ export class AuthService {
   }
 
   async authCheck(user: User) {
+    console.log('authCheck');
     return !!(user && user.id);
   }
 
@@ -84,15 +85,15 @@ export class AuthService {
       console.log('[auth.service] verifyUserRefreshToken() | refreshToken:, ', refreshToken);
       const user = await this.userService.getUserProfile(id, id);
       const storedRefreshToken = await this.tokenService.getRefreshToken(id);
-      console.log(storedRefreshToken.token);
-      const authenticated = storedRefreshToken.token === refreshToken;
+      console.log('[auth.service] verifyUserRefreshToken() | found refreshToken from db: ', storedRefreshToken);
+      const authenticated = storedRefreshToken === refreshToken;
       console.log('[auth.service] verifyUserRefreshToken() | authenticated:', authenticated);
       if (!authenticated) {
         throw new UnauthorizedException();
       }
       return user;
     } catch (err) {
-      throw new UnauthorizedException('Refresh token is not valid.');
+      throw new UnauthorizedException('Refresh token is not valid.', err);
     }
   }
 }

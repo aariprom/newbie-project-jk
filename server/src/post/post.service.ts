@@ -8,7 +8,7 @@ import { PostResDto } from './dto/postRes.dto';
 export class PostService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createPost(userId: string, data: CreatePostDto) {
+  async createPost(userId: string, dietId: number, data: CreatePostDto) {
     const post = await this.prisma.post.create({
       data: {
         ...data,
@@ -17,6 +17,11 @@ export class PostService {
         user: {
           connect: {
             id: userId,
+          }
+        },
+        diet: {
+          connect: {
+            id: dietId,
           }
         }
       },
@@ -29,6 +34,23 @@ export class PostService {
         pictures: {
           select: {
             url: true,
+          }
+        },
+        diet: {
+          select: {
+            id: true,
+            type: true,
+            date: true,
+            foods: {
+              select: {
+                food: {
+                  select: {
+                    id: true,
+                    name: true,
+                  }
+                }
+              }
+            }
           }
         }
       }
