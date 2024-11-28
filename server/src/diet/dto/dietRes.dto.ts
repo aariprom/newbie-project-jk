@@ -12,10 +12,6 @@ export class DietResDto {
   @IsString()
   userId: string;
 
-  @IsOptional()
-  @IsString()
-  memo?: string;
-
   @IsNotEmpty()
   @IsDietType()
   type: DietType;
