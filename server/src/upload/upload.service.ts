@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { S3Service } from '../S3/s3.service';
+import { S3Service } from './S3/s3.service';
 
 @Injectable()
 export class UploadService {

@@ -1,5 +1,6 @@
 import { PrismaService } from '../prisma.service';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Sex } from '@prisma/client';
 
 @Injectable()
 export class DailyConsumeService {
@@ -19,7 +20,7 @@ export class DailyConsumeService {
       }
     });
     if (!data) {
-      throw new BadRequestException('User not found.');
+      throw new NotFoundException('User not found.');
     } else {
       return data;
     }
@@ -27,7 +28,7 @@ export class DailyConsumeService {
 
   async refStat(userId: string) {
     const data = await this.userData(userId);
-    const cal = data.sex === 'M' ?
+    const cal = data.sex === ('M' as Sex) ?
       (10 * data.weight + 6.25 * data.height - 5 * data.age + 5) * data.level :
       (10 * data.weight + 6.25 * data.height - 5 * data.age - 161) * data.level;
     const carbohydrates = [0.45*cal/4, 0.65*cal/4];

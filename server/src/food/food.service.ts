@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { createFoodDto } from './dto/createFood.dto';
 import { searchFoodQueryDto } from './dto/searchFoodQueryDto';
@@ -151,7 +151,7 @@ export class FoodService {
         }
       });
     } else if (!food) {
-      throw new BadRequestException('Food not found.');
+      throw new NotFoundException('Food not found.');
     } else {
       throw new UnauthorizedException('You cannot delete a food that is not created by you.');
     }

@@ -18,21 +18,26 @@ import { TokenService } from './auth/token/token.service';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UploadModule } from './upload/upload.module';
+import { PrismaModule } from './prisma.module';
+import { StatModule } from './diet/stat/stat.module';
+import { StatService } from './diet/stat/stat.service';
 
 @Module({
   imports: [ConfigModule.forRoot({
     envFilePath: process.env.NODE_ENV === 'development' ? './env/.env.development' :
       (process.env.NODE_ENV === 'production' ? './env/.env.production' : './env/.env.local'),
     isGlobal: true,}),
+    PrismaModule,
     AuthModule,
     FoodModule,
     FavFoodModule,
     PostModule,
     DietModule,
     UploadModule,
+    StatModule,
   ],
-  controllers: [AppController, AuthController, PostController],
-  providers: [PostService, AppService, JwtService, PrismaService, TokenService,
+  controllers: [AppController,],
+  providers: [PostService, AppService, JwtService, TokenService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

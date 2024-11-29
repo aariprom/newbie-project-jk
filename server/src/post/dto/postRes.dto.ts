@@ -11,6 +11,10 @@ export class PostResDto {
   @IsString()
   userId: string;
 
+  @IsOptional()
+  @IsString()
+  title: string;
+
   @IsNotEmpty()
   @IsString()
   content: string;

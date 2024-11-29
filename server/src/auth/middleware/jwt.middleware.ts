@@ -37,7 +37,7 @@ export class JwtMiddleware implements NestMiddleware {
         req.user = { id: decoded.userId };
         next();
       } catch (error) {
-        if (error.name !== 'TokenExpiredError') {
+        if (error.name !== 'TokenExpiredError' && !!accessToken) {
           console.log('Invalid token.');
           throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
         }
