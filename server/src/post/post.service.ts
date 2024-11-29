@@ -124,6 +124,7 @@ export class PostService {
       select: {
         id: true,
         userId: true,
+        title: true,
         content: true,
         createdDate: true,
         modifiedDate: true,
@@ -132,6 +133,20 @@ export class PostService {
             url: true,
           },
         },
+        diet: {
+          select: {
+            foods: {
+              select: {
+                food: {
+                  select: {
+                    id: true,
+                    name: true,
+                  }
+                }
+              }
+            }
+          }
+        }
       },
     });
     if (!post) {

@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { DietService } from './diet.service';
 import { DietController } from './diet.controller';
-import { PrismaService } from '../prisma.service';
 import { DailyConsumeService } from './dailyConsume.service';
 import { UserService } from '../users/user.service';
-import { S3Service } from '../S3/s3.service';
+import { StatModule } from './stat/stat.module';
+import { UploadModule } from '../upload/upload.module';
 
 @Module({
-  providers: [DietService, DailyConsumeService, PrismaService, UserService, S3Service,],
+  imports: [StatModule, UploadModule],
+  providers: [DietService, DailyConsumeService, UserService,],
   controllers: [DietController],
   exports: [DietService],
 })

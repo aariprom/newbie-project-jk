@@ -1,13 +1,15 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { DietService } from './diet.service';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { User } from '@prisma/client';
 import { EditDietDto } from './dto/editDiet.dto';
 import { CreateDietReqDto } from './dto/createDietReq.dto';
+import { StatService } from './stat/stat.service';
 
 @Controller('diet')
 export class DietController {
-  constructor(private readonly dietService: DietService) {}
+  constructor(private readonly dietService: DietService,
+              private readonly statService: StatService) {}
 
   @Post()
   async createDiet(@CurrentUser() user: User, @Body() body: CreateDietReqDto) {
@@ -46,6 +48,27 @@ export class DietController {
 
   @Get('/:dietId/stat')
   async getDietStats(@CurrentUser() user: User, @Param('dietId', ParseIntPipe) dietId: number) {
-    return this.dietService.getDietStats(user.id, dietId);
+    return this.statService.getDietStats(user.id, dietId);
+  }
+
+  @Get('/daily/:date')
+  async getDailyDiets(@CurrentUser() user: User, @Param('date') date: string) {
+    const parsedDate = new Date(date);
+    return this.dietService.getDietByDate(user.id, parsedDate);
+  }
+
+  @Get('/daily/:date/stat')
+  async getDailyStats(@CurrentUser() user: User, @Param('date') date: string) {
+    const parsedDate = new Date(date);
+    return this.statService.getDailyStats(user.id, parsedDate);
+  }
+
+  @Get('/monthly/:year/:month/stat')
+  async getMonthlyStats(
+    @CurrentUser() user: User,
+    @Param('year', ParseIntPipe) year: number,
+    @Param('month', ParseIntPipe) month: number,
+  ) {
+    return this.statService.getMonthlyStats(user.id, year, month);
   }
 }
