@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersModule } from 'src/users/users.module';
@@ -9,7 +9,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { TokenModule } from './token/token.module';
 import { ConfigService } from '@nestjs/config';
-import { PrismaService } from '../prisma.service';
 import { TokenService } from './token/token.service';
 
 @Module({
@@ -21,7 +20,6 @@ import { TokenService } from './token/token.service';
     LocalStrategy,
     JwtStrategy,
     JwtRefreshStrategy,
-    PrismaService,
     TokenService,
   ],
   exports: [AuthService],
