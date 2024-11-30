@@ -1,0 +1,23 @@
+.not-found {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.not-found h2 {
+    font-size: 2rem;
+    color: #ff0000; /* Red color for emphasis */
+}
+
+.not-found p {
+    font-size: 1.2rem;
+}
+
+.not-found a {
+    font-size: 1rem;
+    color: #007bff; /* Bootstrap primary color */
+    text-decoration: none;
+}
+
+.not-found a:hover {
+    text-decoration: underline;
+}

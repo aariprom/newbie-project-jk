@@ -1,0 +1,67 @@
+/* src/pages/DietInfo.css */
+
+.diet-info-container {
+    max-width: 800px; /* Set a maximum width for the container */
+    margin: 0 auto; /* Center the container */
+    padding: 20px; /* Add padding around the container */
+    border: 1px solid #ddd; /* Light gray border */
+    border-radius: 8px; /* Rounded corners */
+    background-color: #f9f9f9; /* Light background color */
+}
+
+.diet-info,
+.diet-stats,
+.diet-count,
+.nutrient-diff {
+    margin-bottom: 20px; /* Space between sections */
+    padding: 15px; /* Padding inside each section */
+    border: 1px solid #ccc; /* Gray border for sections */
+    border-radius: 5px; /* Rounded corners for sections */
+    background-color: #fff; /* White background for sections */
+}
+
+h2 {
+    font-size: 24px; /* Font size for section headers */
+    margin-bottom: 10px; /* Space below section headers */
+}
+
+h3 {
+    font-size: 20px; /* Font size for sub-section headers */
+    margin-top: 15px; /* Space above sub-section headers */
+}
+
+p {
+    font-size: 16px; /* Font size for paragraphs */
+    margin: 5px 0; /* Space above and below paragraphs */
+}
+
+strong {
+    font-weight: bold; /* Bold text for emphasis */
+}
+
+ul {
+    list-style-type: none; /* Remove default list styling */
+    padding-left: 0; /* Remove left padding from lists */
+}
+
+li {
+    margin-bottom: 5px; /* Space between list items */
+}
+
+/* Optional styling for nutrient evaluation messages */
+.nutrient-diff p {
+    margin: 5px 0;
+}
+
+/* Color coding for exceeded and deficient nutrients */
+.nutrient-diff p {
+    color: #333; /* Default text color */
+}
+
+.nutrient-diff p:nth-child(odd) {
+    color: #d9534f; /* Red for exceeded nutrients (example) */
+}
+
+.nutrient-diff p:nth-child(even) {
+    color: #5bc0de; /* Blue for deficient nutrients (example) */
+}

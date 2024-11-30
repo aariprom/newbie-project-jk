@@ -12,7 +12,7 @@ import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { UploadImageReqDto } from './dto/uploadImageReq.dto';
 
 @Controller('user')
-export class UsersController {
+export class UserController {
   constructor(private readonly userService: UserService,
               private readonly uploadService: UploadService,
               ) {}

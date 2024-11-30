@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import api from '../utils/api'; // Ensure this points to your API instance
 import { Link, useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
+import api from '../../utils/AxiosInstance'; // Ensure this points to your API instance
+import './Dashboard.css'
 
 const Dashboard = () => {
   const [userData, setUserData] = useState<any>(null);

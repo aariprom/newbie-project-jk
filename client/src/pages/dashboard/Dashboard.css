@@ -1,0 +1,47 @@
+.dashboard-container {
+    padding: 20px;
+}
+
+.calendar {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.calendar th, .calendar td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.calendar th {
+    background-color: #f2f2f2;
+}
+
+.calendar-day {
+    height: 100px;
+    vertical-align: top;
+}
+
+.day-number {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.diet-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.diet-list li {
+    margin-bottom: 3px;
+}
+
+.diet-list a {
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.diet-list a:hover {
+    text-decoration: underline;
+}

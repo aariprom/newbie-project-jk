@@ -32,9 +32,14 @@ export class AuthController {
     return 'Logout successful.';
   }
 
-  @Get('/authCheck')
+  @Get('/check')
   @Public()
-  async authCheck(@CurrentUser() user: User) {
+  async check(@CurrentUser() user: User) {
     return this.authService.authCheck(user);
+  }
+
+  @Post('/refresh')
+  async refresh(@CurrentUser() user: User) {
+    return 'Refresh successful.';
   }
 }

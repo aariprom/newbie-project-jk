@@ -3,7 +3,7 @@ import { TokenInterceptor } from '../../token.interceptor';
 import { TokenService } from './token.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../auth.service';
-import { UserService } from '../../users/user.service';
+import { UserService } from '../../user/user.service';
 import { UploadModule } from '../../upload/upload.module';
 
 @Module({

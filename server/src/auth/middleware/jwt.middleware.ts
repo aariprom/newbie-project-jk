@@ -24,7 +24,7 @@ export class JwtMiddleware implements NestMiddleware {
     if (
       req.baseUrl === '/auth/signup' ||
       req.baseUrl === '/auth/login' ||
-      ((!accessToken || !refreshToken) && (req.baseUrl === '/auth/authCheck'))
+      ((!accessToken || !refreshToken) && (req.baseUrl === '/auth/check'))
     ) {
       next();
     } else {

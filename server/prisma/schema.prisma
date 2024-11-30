@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String        @id @unique
+  pw             String
+  email          String
+  age            Int?
+  height         Int?
+  weight         Int?
+  sex            Sex?
+  level          Int?
+  createdDate    DateTime
+  modifiedDate   DateTime
+  profilePicUrl  String?
+  diets          Diet[]
+  customFoods    Food[]
+  posts          Post[]
+  favFoods       FavFood[]
+  RefreshToken   RefreshToken?
+  privateProfile Boolean       @default(true)
+  ProfilePic     ProfilePic[]
+
+  @@unique([id, email])
+}
+
+model Food {
+  id            Int           @id @default(autoincrement())
+  user          User?         @relation(fields: [userId], references: [id])
+  userId        String?
+  name          String
+  type          FoodType
+  category      Int?
+  carbohydrates Int?
+  fat           Int?
+  protein       Int?
+  sugars        Int?
+  calories      Int?
+  sodium        Int?
+  favFoods      FavFood[]
+  FoodsInDiet   FoodsInDiet[]
+}
+
+model FavFood {
+  User   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  Food   Food?  @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  foodId Int
+
+  @@unique([userId, foodId])
+}
+
+model Diet {
+  id     Int           @id @default(autoincrement())
+  user   User          @relation(fields: [userId], references: [id])
+  userId String
+  foods  FoodsInDiet[]
+  type   DietType
+  date   DateTime
+  Post   Post?
+
+  @@unique([type, date, userId])
+}
+
+model FoodsInDiet {
+  diet   Diet @relation(fields: [dietId], references: [id], onDelete: Cascade)
+  dietId Int
+  food   Food @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  foodId Int
+
+  @@unique([dietId, foodId])
+}
+
+model Picture {
+  url    String @unique
+  post   Post?  @relation(fields: [postId], references: [id])
+  postId Int?
+}
+
+model ProfilePic {
+  url    String  @unique
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+}
+
+model Post {
+  id           Int       @id @default(autoincrement())
+  user         User      @relation(fields: [userId], references: [id])
+  userId       String
+  title        String?
+  content      String?
+  pictures     Picture[]
+  isPublic     Boolean   @default(false)
+  diet         Diet      @relation(fields: [dietId], references: [id])
+  dietId       Int       @unique
+  createdDate  DateTime
+  modifiedDate DateTime
+}
+
+model RefreshToken {
+  token  String @id
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+}
+
+enum DietType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  OTHERS
+}
+
+enum FoodType {
+  P // product
+  D // dish
+}
+
+enum Sex {
+  M
+  F
+}

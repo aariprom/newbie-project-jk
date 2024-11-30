@@ -92,6 +92,7 @@ export class StatService {
 
     const alert = await this.alert(userId, stat);
     const count = this.countNutrientIssues(alert.msg);
+    const diff = alert.diff;
 
     /*
     todo:
@@ -104,6 +105,7 @@ export class StatService {
     return {
       stat: new StatDto(stat),
       count: count,
+      diff: diff,
     };
   }
 
@@ -233,12 +235,12 @@ export class StatService {
     const ref = await this.dailyConsumeService.refStat(userId);
     const msg: any = {};
     const diff = {
-      excessCarb: stat.carbohydrates - ref.carbohydrates[1],
-      deficientCarb: ref.carbohydrates[0] - stat.carbohydrates,
-      excessProtein: stat.protein - ref.protein[1],
-      deficientProtein: ref.protein[0] - stat.protein,
-      excessFat: stat.fat - ref.fat[1],
-      deficientFat: ref.fat[0] - stat.fat,
+      cal: stat.calories - ref.cal,
+      carb: stat.carbohydrates - ref.carbohydrates,
+      protein: stat.protein - ref.protein,
+      fat: stat.fat - ref.fat,
+      sugars: stat.sugars - ref.sugars,
+      sodium: stat.sodium - ref.sodium,
     };
 
     if (ref.cal < stat.calories * 0.7) {
@@ -246,20 +248,20 @@ export class StatService {
     } else if (ref.cal > stat.calories * 1.3) {
       msg.cal = 'D';
     }
-    if (diff.deficientCarb > 0) {
-      msg.carbohydrates = 'D';
-    } else if (diff.excessCarb > 0) {
+    if (ref.carbohydrates < stat.carbohydrates * 0.7) {
       msg.carbohydrates = 'E';
+    } else if (ref.carbohydrates > stat.carbohydrates * 1.3) {
+      msg.carbohydrates = 'D';
     }
-    if (diff.deficientFat > 0) {
-      msg.fat = 'D';
-    } else if (diff.excessFat > 0) {
+    if (ref.fat < stat.fat * 0.7) {
       msg.fat = 'E';
+    } else if (ref.fat > stat.fat * 1.3) {
+      msg.fat = 'D';
     }
-    if (diff.deficientProtein > 0) {
-      msg.protein = 'D';
-    } else if (diff.excessProtein > 0) {
+    if (ref.protein < stat.protein * 0.7) {
       msg.protein = 'E';
+    } else if (ref.protein > stat.protein * 1.3) {
+      msg.protein = 'D';
     }
     if (ref.sugars < stat.sugars * 0.7) {
       msg.sugars = 'E';

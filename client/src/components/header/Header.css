@@ -1,0 +1,33 @@
+.header {
+    background-color: #f8f9fa; /* Light gray background */
+    padding: 1rem; /* Padding around the header */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.header ul {
+    list-style-type: none; /* Remove bullet points from list */
+    padding: 0; /* Remove default padding */
+    display: flex; /* Use flexbox for horizontal layout */
+    justify-content: space-around; /* Space items evenly */
+}
+
+.header li {
+    margin: 0 10px; /* Margin between list items */
+}
+
+.header a, .header button {
+    text-decoration: none; /* Remove underline from links */
+    color: #333; /* Dark gray text color */
+    font-weight: bold; /* Bold text for visibility */
+}
+
+.header button {
+    background: none; /* No background for button */
+    border: none; /* No border for button */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    font-size: 1em; /* Font size for button text */
+}
+
+.header a:hover, .header button:hover {
+    color: #007bff; /* Change color on hover (Bootstrap primary color) */
+}
