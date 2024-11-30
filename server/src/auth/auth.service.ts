@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { compare } from 'bcrypt';
-import { UserService } from '../users/user.service';
+import { UserService } from '../user/user.service';
 import { Response } from 'express';
 import { TokenService } from './token/token.service';
 import { User } from '@prisma/client';
@@ -76,7 +76,7 @@ export class AuthService {
 
   async authCheck(user: User) {
     console.log('authCheck');
-    return !!(user && user.id);
+    return { isAuthenticated: !!(user && user.id) };
   }
 
   async verifyUserRefreshToken(refreshToken: string, id: string) {

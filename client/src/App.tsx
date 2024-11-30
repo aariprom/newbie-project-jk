@@ -1,65 +1,65 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/home';
-import Login from './pages/login';
 import React, { useEffect, useState } from 'react';
-import Header from './pages/components/header';
-import api from './utils/api';
-import NotFound from './pages/404';
-import Logout from './pages/logout';
-import Dashboard from './pages/dashboard';
-import Signup from './pages/signup';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './pages/home/Home';
+import Login from './pages/login/Login';
+import Signup from './pages/signup/Signup';
+import Dashboard from './pages/dashboard/Dashboard';
+import Logout from './pages/logout/Logout';
+import './App.css';
+import AxiosInstance from './utils/AxiosInstance';
+import Header from './components/header/Header';
+import NotFound from './pages/notfound/NotFound';
+import Profile from './pages/profile/Profile';
+import EditProfile from './pages/profile/EditProfile';
+import SearchFood from './pages/food/SearchFood';
+import DietInfo from './pages/diet/DietInfo';
 
-const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState<string>('');
+const App: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // This effect runs once on mount to check if user is authenticated
+  // Check authentication status on mount
   useEffect(() => {
-    const fetchAuthCheck = async () => {
+    const checkAuth = async () => {
       try {
-        const response = await api.get('/auth/authCheck');
-        if (response.data) {
-          setIsAuthenticated(true);
-        }
-      } catch (e) {
-        setErrorMsg('Error while fetching authentication info.');
+        const response = await AxiosInstance.get('/auth/check'); // Adjust endpoint as needed
+        console.log('Auth check response:', response.data); // Debugging log
+        setIsAuthenticated(response.data.isAuthenticated); // Adjust according to your API response structure
+      } catch (error) {
+        console.error('Error checking authentication:', error);
+        setIsAuthenticated(false); // Not authenticated if error occurs
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false after check
       }
     };
 
-    fetchAuthCheck();
-  }, []); // Only run once on mount
-
+    checkAuth();
+  }, []);
 
   const handleLogout = async () => {
     try {
-      const response = await api.post('/auth/logout');
-      if (response.status === 201) {
-        setIsAuthenticated(false); // Immediately reflect logout state
-        alert('Logout successful.');
-      } else {
-        alert('Logout failed.');
-      }
+      await AxiosInstance.post('/auth/logout'); // Call logout endpoint on server
+      setIsAuthenticated(false); // Update auth state to logged out
     } catch (error) {
-      console.error('Logout failed.');
-      alert('Logout failed.');
+      console.error('Logout failed', error);
     }
   };
 
   return (
     <Router>
-      <div>
-        {/* Pass `isAuthenticated` and `handleLogout` as props to Header */}
+      <div className="App">
         <Header isAuthenticated={isAuthenticated} loading={loading} handleLogout={handleLogout} />
         <Routes>
-          {/* Pass `isAuthenticated` as prop to Home */}
-          <Route path="/" element={<Home isAuthenticated={isAuthenticated} />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/logout" element={<Logout />} />
+          <Route path="/logout" element={<Logout handleLogout={handleLogout} />} />
+          <Route path="/profile"
+            element={<Profile isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />}
+          />
+          <Route path="/diet/:dietID" element={<DietInfo />} />
+          <Route path="/search-food" element={<SearchFood />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

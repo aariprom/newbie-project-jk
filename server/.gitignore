@@ -61,5 +61,5 @@ volumes/
 volumes/*
 
 # prisma
-prisma/
-prisma/*
+prisma/migrations/
+prisma/migrations/*

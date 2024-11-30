@@ -1,0 +1,39 @@
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form div {
+    margin-bottom: 15px; /* Space between form fields */
+}
+
+label {
+    font-weight: bold; /* Make labels bold */
+}
+
+input[type="number"],
+input[type="text"],
+select {
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc; /* Light gray border */
+}
+
+input[type="checkbox"] {
+    margin-right: 10px; /* Space between checkbox and label */
+}
+
+button[type="submit"] {
+    padding: 10px 15px;
+    font-size: 16px;
+    color: white;
+    background-color: #28a745; /* Green color for save button */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #218838; /* Darker green on hover */
+}
