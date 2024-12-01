@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { PrismaService } from '../../prisma.service'
 
+type TokenInfo = { token: string, userId: string };
+
 @Injectable()
 export class TokenService {
   constructor(
@@ -39,7 +41,7 @@ export class TokenService {
   /*************** Token Setting to Response  ***************/
 
   // Method to send cookies with the access and refresh tokens
-  setCookies(response: Response, accessToken: string, refreshToken: string) {
+  setCookies(response: Response, accessToken: string, refreshToken: string): void {
     const expiresAccessToken = new Date();
     expiresAccessToken.setMilliseconds(expiresAccessToken.getTime() + parseInt(this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_MS')));
 
@@ -88,7 +90,7 @@ export class TokenService {
   /*************** Refresh Token Management with DB ***************/
 
   // Store the refresh token (assuming you store them in a DB or a cache)
-  async storeRefreshToken(refreshToken: string, user: any) {
+  async storeRefreshToken(refreshToken: string, user: any): Promise<TokenInfo> {
     return this.prisma.refreshToken.create({
       data: {
         token: refreshToken,
@@ -97,7 +99,7 @@ export class TokenService {
     })
   }
 
-  async getRefreshToken(userId: string) {
+  async getRefreshToken(userId: string): Promise<string> {
     const token = await this.prisma.refreshToken.findUnique({
       where: {
         userId: userId,
@@ -112,7 +114,7 @@ export class TokenService {
     return token.token;
   }
 
-  async removeRefreshToken(userId: string) {
+  async removeRefreshToken(userId: string): Promise<TokenInfo> {
     return this.prisma.refreshToken.delete({
       where: {
         userId: userId,

@@ -6,7 +6,11 @@ import { CurrentUser } from '../auth/current-user.decorator';
 import { User } from '@prisma/client';
 import { createFoodDto } from './dto/createFood.dto';
 import { searchFoodQueryDto } from './dto/searchFoodQueryDto';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { FoodResDto } from './dto/foodRes.dto';
+import { ApiCommonErrorResponse } from '../swagger-common-response.decorator';
 
+@ApiTags('Food')
 @Controller('food')
 export class FoodController {
   constructor(private readonly foodService: FoodService,
@@ -15,33 +19,53 @@ export class FoodController {
   }
 
   @Get('/search')
-  async search(@Query() query: searchFoodQueryDto) {
+  @ApiResponse({ status: 200, description: 'Search food items.', type: [FoodResDto] })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized. ' })
+  async search(@Query() query: searchFoodQueryDto): Promise<FoodResDto[]> {
     return this.foodService.search(query);
   }
 
   @Post()
-  async create(@CurrentUser() user: User, @Body() body: createFoodDto) {
+  @ApiResponse({ status: 201, description: 'Food item created successfully.', type: FoodResDto })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized. ' })
+  async create(@CurrentUser() user: User, @Body() body: createFoodDto): Promise<FoodResDto> {
     return this.foodService.create(user.id, body);
   }
 
   @Delete('/:foodId')
-  async delete(@CurrentUser() user: User, @Param('foodId', ParseIntPipe) foodId: number) {
-    return this.foodService.delete(user.id, foodId);
+  @ApiResponse({ status: 204, description: 'Food item deleted successfully.' })
+  @ApiCommonErrorResponse()
+  async delete(
+    @CurrentUser() user: User,
+    @Param('foodId', ParseIntPipe) foodId: number
+  ): Promise<string> {
+    await this.foodService.delete(user.id, foodId);
+    return 'Food item deleted successfully.';
   }
 
   @Get('/fav')
+  @ApiResponse({ status: 200, description: 'Get favorite food items.', type: [FoodResDto] })
+  @ApiCommonErrorResponse()
   async readFavFood(@CurrentUser() user: User) {
     return this.favFoodService.getFavFood(user.id);
   }
 
   @Post('/fav/:foodId')
+  @ApiResponse({ status: 201, description: 'Added food item to favorites.', type: FoodResDto })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized. ' })
   async addToFav(@CurrentUser() user: User, @Param('foodId', ParseIntPipe) foodId: number) {
     return this.favFoodService.createFavFood(user.id, foodId);
   }
 
   @Delete('/fav/:foodId')
+  @ApiResponse({ status: 204, description: 'Removed food item from favorites.' })
+  @ApiCommonErrorResponse()
   async delFromFav(@CurrentUser() user: User, @Param('foodId', ParseIntPipe) foodId: number) {
-    return this.favFoodService.deleteFavFood(user.id, foodId);
+    await this.favFoodService.deleteFavFood(user.id, foodId);
+    return 'Removed food item from favorites.'
   }
 
   /******************** local / dev only! ***********************/

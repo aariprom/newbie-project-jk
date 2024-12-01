@@ -13,7 +13,7 @@ export function IsSex(validationOptions?: ValidationOptions) {
           return Object.values(Sex).includes(value);
         },
         defaultMessage(args: ValidationArguments) {
-          return `${args.property} must be a valid FoodType (${Object.values(
+          return `${args.property} must be a valid Sex (${Object.values(
             Sex
           ).join(', ')})`;
         },

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import api from '../../utils/AxiosInstance'; // Ensure this points to your API instance
 import './Dashboard.css'
+import Calendar from '../../components/calendar/Calendar';
 
 const Dashboard = () => {
   const [userData, setUserData] = useState<any>(null);
@@ -45,18 +46,21 @@ const Dashboard = () => {
 
   return (
     <div>
-      <h1>Dashboard</h1>
-      {userData ? (
-        <div>
-          <p>Welcome back, {userData.id}!</p>
-          <p>Email: {userData.email}</p>
-          <p>Modify Profile<Link to='/profile'></Link></p>
-          {/* todo: show calendar + diet, shortcut to create diet, monthly status */}
-          {/* Add more user-specific data here */}
-        </div>
-      ) : (
-        <p>No user data available.</p>
-      )}
+      <div className="dashboard-container">
+        <h1>Dashboard</h1>
+        {userData ? (
+          <div>
+            <p>Welcome back, {userData.id}!</p>
+            <p>Email: {userData.email}</p>
+            <p>Modify Profile<Link to='/profile'></Link></p>
+            {/* todo: show calendar + diet, shortcut to create diet, monthly status */}
+            <Calendar />
+            {/* Add more user-specific data here */}
+          </div>
+        ) : (
+          <p>No user data available.</p>
+        )}
+      </div>
     </div>
   );
 };

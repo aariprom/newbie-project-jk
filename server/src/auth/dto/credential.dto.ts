@@ -1,7 +1,8 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from '@prisma/client';
 
-export class LoginDto {
+export class CredentialDto {
   @ApiProperty({ description: 'id', example: 'jk' })
   @IsNotEmpty()
   @IsString()
@@ -11,4 +12,8 @@ export class LoginDto {
   @IsNotEmpty()
   @IsString()
   pw: string;
+
+  constructor(partial: Partial<User>) {
+    Object.assign(this, partial);
+  }
 }

@@ -8,14 +8,7 @@ import { FoodInDietResDto } from './dto/foodInDietRes.dto';
 export class DietService {
   constructor(private readonly prisma: PrismaService) {}
 
-  onModuleInit() {
-    if (!this.prisma) {
-      console.error('PrismaService is undefined in DietService!');
-    } else {
-      console.log('PrismaService is successfully injected in DietService!');
-    }
-  }
-  async createDiet(userId: string, data: CreateDietReqDto) {
+  async createDiet(userId: string, data: CreateDietReqDto): Promise<DietResDto> {
     const diet = await this.prisma.diet.create({
       data: {
         ...data,
@@ -45,15 +38,18 @@ export class DietService {
     return new DietResDto(diet);
   }
 
-  async deleteDiet(dietId: number) {
-    return this.prisma.diet.delete({
+  async deleteDiet(dietId: number): Promise<void> {
+    const diet = await this.prisma.diet.delete({
       where: {
         id: dietId,
       }
     });
+    if (!diet) {
+      throw new NotFoundException('No diets are found for given diet id.');
+    }
   }
 
-  async editDiet(data: any, dietId: number) {
+  async editDiet(data: any, dietId: number): Promise<DietResDto> {
     const diet = await this.prisma.diet.update({
       where: {
         id: dietId,
@@ -71,10 +67,21 @@ export class DietService {
         date: true,
       }
     });
+    if (!diet) {
+      throw new NotFoundException('No diets are found for given diet id.');
+    }
     return new DietResDto(diet);
   }
 
   async getDietByUserId(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      }
+    })
+    if (!user) {
+      throw new NotFoundException('No users found for given user id.');
+    }
     const diets = await this.prisma.diet.findMany({
       where: {
         userId: userId,
@@ -159,9 +166,6 @@ export class DietService {
         }
       }
     });
-    if (diets.length === 0 || !diets) {
-      throw new NotFoundException('No diets found for given date.');
-    }
     return diets.map(diet => new DietResDto(diet));
   }
 }

@@ -1,0 +1,27 @@
+.calendar-container {
+    max-width: 600px; /* Set a maximum width for the calendar */
+    margin: auto; /* Center the calendar */
+    padding: 20px; /* Add padding around the container */
+    border: 1px solid #ddd; /* Light gray border */
+    border-radius: 8px; /* Rounded corners */
+    background-color: #f9f9f9; /* Light background color */
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* Create a grid with 7 columns */
+    gap: 10px; /* Space between cells */
+}
+
+.calendar-cell {
+    padding: 15px; /* Padding inside each cell */
+    text-align: center; /* Center text */
+    border: 1px solid #ccc; /* Light gray border for cells */
+    border-radius: 5px; /* Rounded corners for cells */
+    background-color: #fff; /* White background for cells */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.calendar-cell:hover {
+    background-color: #e0e0e0; /* Change background on hover */
+}

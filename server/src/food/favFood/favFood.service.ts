@@ -33,8 +33,8 @@ export class FavFoodService {
     return new FoodResDto(food.Food);
   }
 
-  async deleteFavFood(userId: string, foodId: number) {
-    return this.prisma.favFood.deleteMany({
+  async deleteFavFood(userId: string, foodId: number): Promise<void> {
+    this.prisma.favFood.deleteMany({
       where:
         {
           userId: userId,
@@ -43,7 +43,7 @@ export class FavFoodService {
     });
   }
 
-  async getFavFood(userId: string) {
+  async getFavFood(userId: string): Promise<FoodResDto[]> {
     const foods = await this.prisma.favFood.findMany({
       where: {
         userId: userId,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom'; // Import useParams to get dietID from URL
+import { useParams } from 'react-router-dom'; // Import useParams to get dietId from URL
 import AxiosInstance from '../../utils/AxiosInstance'; // Adjust import as necessary
 import './DietInfo.css';
 import axios, { AxiosError } from 'axios';
@@ -58,7 +58,7 @@ interface Diff {
 }
 
 const DietInfo: React.FC = () => {
-  const { dietID } = useParams<{ dietID: string }>(); // Get dietID from URL parameters
+  const { dietId } = useParams<{ dietId: string }>(); // Get dietId from URL parameters
   const [dietInfo, setDietInfo] = useState<DietResDto | null>(null);
   const [dietStats, setDietStats] = useState<StatDto | null>(null);
   const [dietCount, setDietCount] = useState<Count | null>(null);
@@ -70,11 +70,11 @@ const DietInfo: React.FC = () => {
     const fetchDietInfo = async () => {
       try {
         // Fetch diet information
-        const response = await AxiosInstance.get(`/diet/${dietID}`);
+        const response = await AxiosInstance.get(`/diet/${dietId}`);
         setDietInfo(response.data); // Assuming response.data matches DietResDto structure
 
         // Fetch diet statistics and counts
-        const statsResponse = await AxiosInstance.get(`/diet/${dietID}/stat`);
+        const statsResponse = await AxiosInstance.get(`/diet/${dietId}/stat`);
         setDietStats(statsResponse.data.stat); // Assuming statsResponse.data.stat matches StatDto structure
         setDietCount(statsResponse.data.count); // Assuming statsResponse.data.count matches Count structure
         setDietDiff(statsResponse.data.diff); // Assuming statsResponse.data.diff matches Diff structure
@@ -91,7 +91,7 @@ const DietInfo: React.FC = () => {
     };
 
     fetchDietInfo();
-  }, [dietID]);
+  }, [dietId]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;

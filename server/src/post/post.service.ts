@@ -1,6 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreatePostDto } from './dto/createPost.dto';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
+import { CreatePostDto } from './dto/createPost.dto';
 import { EditPostDto } from './dto/editPost.dto';
 import { PostResDto } from './dto/postRes.dto';
 
@@ -59,11 +59,20 @@ export class PostService {
   }
 
   async deletePost(postId: number) {
-    return this.prisma.post.delete({
+    const post = await this.prisma.post.findUnique({
       where: {
-        id: Number(postId),
+        id: postId,
       }
     });
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    } else {
+      await this.prisma.post.delete({
+        where: {
+          id: postId,
+        }
+      })
+    }
   }
 
   async deletePostByUserId(userId: string) {

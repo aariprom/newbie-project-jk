@@ -3,12 +3,13 @@ import { PrismaService } from '../prisma.service';
 import { createFoodDto } from './dto/createFood.dto';
 import { searchFoodQueryDto } from './dto/searchFoodQueryDto';
 import { FoodResDto } from './dto/foodRes.dto';
+import { DietResDto } from '../diet/dto/dietRes.dto';
 
 @Injectable()
 export class FoodService {
   constructor(private readonly prisma: PrismaService) {};
 
-  async search(searchParams: searchFoodQueryDto) {
+  async search(searchParams: searchFoodQueryDto): Promise<FoodResDto[]> {
     const {
       name,
       type,
@@ -127,7 +128,7 @@ export class FoodService {
     return this.prisma.food.deleteMany();
   }
 
-  async create(userId: string, data: createFoodDto) {
+  async create(userId: string, data: createFoodDto): Promise<FoodResDto> {
     const food = await this.prisma.food.create(
       {
         data: {
@@ -138,14 +139,14 @@ export class FoodService {
     return new FoodResDto(food);
   }
 
-  async delete(userId: string, foodId: number): Promise<any> {
+  async delete(userId: string, foodId: number): Promise<void> {
     const food = await this.prisma.food.findUnique({
       where: {
         id: foodId,
       }
     });
     if (food.userId === userId) {
-      return this.prisma.food.delete({
+      await this.prisma.food.delete({
         where: {
           id: foodId,
         }

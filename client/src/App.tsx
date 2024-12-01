@@ -13,6 +13,7 @@ import Profile from './pages/profile/Profile';
 import EditProfile from './pages/profile/EditProfile';
 import SearchFood from './pages/food/SearchFood';
 import DietInfo from './pages/diet/DietInfo';
+import DailyDiet from './pages/diet/DailyDiet';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -24,7 +25,7 @@ const App: React.FC = () => {
       try {
         const response = await AxiosInstance.get('/auth/check'); // Adjust endpoint as needed
         console.log('Auth check response:', response.data); // Debugging log
-        setIsAuthenticated(response.data.isAuthenticated); // Adjust according to your API response structure
+        setIsAuthenticated(!!response.data.id); // Adjust according to your API response structure
       } catch (error) {
         console.error('Error checking authentication:', error);
         setIsAuthenticated(false); // Not authenticated if error occurs
@@ -58,7 +59,8 @@ const App: React.FC = () => {
           <Route path="/profile"
             element={<Profile isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />}
           />
-          <Route path="/diet/:dietID" element={<DietInfo />} />
+          <Route path="/diet/:date" element={<DailyDiet />} />
+          <Route path="/diet/:dietId" element={<DietInfo />} />
           <Route path="/search-food" element={<SearchFood />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

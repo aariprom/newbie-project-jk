@@ -6,7 +6,8 @@ import { Response } from 'express';
 import { TokenService } from './token/token.service';
 import { User } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
-import { LoginDto } from './dto/login.dto';
+import { CredentialDto } from './dto/credential.dto';
+import { UserResDto } from '../user/dto/userRes.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,11 +17,11 @@ export class AuthService {
     private readonly tokenService: TokenService,
   ) {}
 
-  async createUser(params: any): Promise<User> {
+  async createUser(params: any): Promise<UserResDto> {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(params.pw, salt);
     const currentDateTime = (new Date()).toISOString();
-    return this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
         ...params,
         pw: hashedPassword,
@@ -28,9 +29,10 @@ export class AuthService {
         modifiedDate: currentDateTime,
       },
     });
+    return new UserResDto(user, true, true);
   }
 
-  async login(user: LoginDto, res: Response, redirect = false) {
+  async login(user: CredentialDto, res: Response, redirect = false): Promise<void> {
     // Generate tokens using TokenService
     const accessToken = this.tokenService.createAccessToken(user.id);
 
@@ -59,12 +61,10 @@ export class AuthService {
     }*/
   }
 
-  async verifyUser(id: string, password: string) {
+  async verifyUser(id: string, password: string): Promise<CredentialDto> {
     try {
       const user = await this.userService.getPassword(id);
       const authenticated = await compare(password, user.pw);
-      /*console.log('[auth.service.ts] verifyUser() | user: ', user);
-      console.log('[auth.service.ts] verifyUser() | authenticated:, ', authenticated);*/
       if (!authenticated) {
         throw new UnauthorizedException();
       }
@@ -74,20 +74,19 @@ export class AuthService {
     }
   }
 
-  async authCheck(user: User) {
+  async authCheck(user: User): Promise<Partial<CredentialDto>> {
     console.log('authCheck');
-    return { isAuthenticated: !!(user && user.id) };
+    if (!user || !user.id) {
+      return new CredentialDto({ id: null });
+    }
+    return new CredentialDto({ id: user.id });
   }
 
-  async verifyUserRefreshToken(refreshToken: string, id: string) {
+  async verifyUserRefreshToken(refreshToken: string, id: string): Promise<UserResDto> {
     try {
-      console.log('[auth.service] verifyUserRefreshToken() | userId: ', id);
-      console.log('[auth.service] verifyUserRefreshToken() | refreshToken:, ', refreshToken);
       const user = await this.userService.getUserProfile(id, id);
       const storedRefreshToken = await this.tokenService.getRefreshToken(id);
-      console.log('[auth.service] verifyUserRefreshToken() | found refreshToken from db: ', storedRefreshToken);
       const authenticated = storedRefreshToken === refreshToken;
-      console.log('[auth.service] verifyUserRefreshToken() | authenticated:', authenticated);
       if (!authenticated) {
         throw new UnauthorizedException();
       }
