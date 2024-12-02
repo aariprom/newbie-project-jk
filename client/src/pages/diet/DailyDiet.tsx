@@ -5,6 +5,7 @@ import axiosInstance from '../../utils/AxiosInstance';
 import './DailyDiet.css';
 import axios, { isAxiosError } from 'axios';
 import CreateDiet from './CreateDiet';
+import './DailyDiet.css';
 
 interface Diet {
   id: number;
@@ -16,6 +17,11 @@ const DailyDiet: React.FC = () => {
   const [diets, setDiets] = useState<Diet[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isCreateDietVisible, setIsCreateDietVisible] = useState(false);
+
+  const toggleCreateDiet = () => {
+    setIsCreateDietVisible(!isCreateDietVisible);
+  };
 
   const fetchDailyDiets = async () => {
     try {
@@ -62,7 +68,12 @@ const DailyDiet: React.FC = () => {
           </div>
         ))
       )}
-      <CreateDiet date={date || ''} onDietCreated={handleDietCreated} />
+      <button onClick={toggleCreateDiet} className="toggle-create-diet-btn">
+        {isCreateDietVisible ? 'Cancel' : 'Create Diet'}
+      </button>
+      {isCreateDietVisible && (
+        <CreateDiet date={date || ''} onDietCreated={handleDietCreated} />
+      )}
     </div>
   );
 };

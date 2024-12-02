@@ -17,7 +17,13 @@ const Home: React.FC<{ isAuthenticated: boolean}> = ({ isAuthenticated })  => {
             <Link to="/login" className="home-button">Login</Link>
             <Link to="/signup" className="home-button">Sign Up</Link>
           </>
-        ) : <Link to="/dashboard" className="home-button">Dashboard</Link>}
+        ) : (
+          <>
+            <Link to="/dashboard" className="home-button">Dashboard</Link>
+            <Link to="/all-posts" className="home-button">View All Posts</Link>
+            <Link to="/search-food" className="home-button">Search food</Link>
+          </>)
+        }
       </div>
     </div>
   );

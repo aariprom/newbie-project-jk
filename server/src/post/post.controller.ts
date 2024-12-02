@@ -92,8 +92,15 @@ export class PostController {
   @Get('/:postId')
   @Public()
   @ApiCommonErrorResponse()
-  async getPost(@Param('postId', ParseIntPipe) postId: number) {
+  async getPostById(@Param('postId', ParseIntPipe) postId: number) {
     return this.postService.getPostByPostId(postId);
+  }
+
+  @Get()
+  @Public()
+  @ApiCommonErrorResponse()
+  async getPost() {
+    return this.postService.getPost();
   }
 
 }

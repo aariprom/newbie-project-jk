@@ -1,4 +1,4 @@
-import { IsArray, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsArray, IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { Post } from '@prisma/client';
 import { FoodResDto } from '../../food/dto/foodRes.dto';
@@ -40,7 +40,10 @@ export class PostResDto {
   @Transform(({ value }) => {
     return value.map(((food: { food: { id: number, name: string } }) => new FoodResDto({ id: food.food.id, name:food.food.name })));
   })
-  foods;
+  foods: any;
+
+  @IsBoolean()
+  isPublic: boolean;
 
   constructor(partial: Partial<Post>) {
     return Object.assign(this, partial);

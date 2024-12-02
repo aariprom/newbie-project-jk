@@ -44,12 +44,14 @@ const CreatePost: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axiosInstance.post(`/post/${dietId}`, {
+      const response = await axiosInstance.post(`/post/${dietId}`, {
         title,
         content,
         isPublic
       });
-      navigate(`/diet/${dietId}`);
+      console.log(response.data);
+      const postId = response.data.id;
+      navigate(`/post/${postId}`);
     } catch (err) {
       console.error('Error creating post:', err);
       setError('Failed to create post. Please try again.');

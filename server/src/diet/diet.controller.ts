@@ -11,6 +11,7 @@ import { ApiCommonErrorResponse } from '../swagger-common-response.decorator';
 import { FoodInDietResDto } from './dto/foodInDietRes.dto';
 import { StatResDto } from './dto/statRes.dto';
 import { AggregatedStatDto } from './stat/dto/AggregatedStat.dto';
+import { IsPostedDto } from './dto/isPosted.dto';
 
 @Controller('diet')
 export class DietController {
@@ -111,5 +112,10 @@ export class DietController {
     @Param('month', ParseIntPipe) month: number,
   ): Promise<AggregatedStatDto> {
     return this.statService.getMonthlyStats(user.id, year, month);
+  }
+
+  @Get('/:dietId/check')
+  async isDietPosted(@Param('dietId', ParseIntPipe) dietId: number): Promise<IsPostedDto> {
+    return this.dietService.isDietPosted(dietId);
   }
 }

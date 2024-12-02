@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom'; // Import useParams to get dietId from URL
 import AxiosInstance from '../../utils/AxiosInstance'; // Adjust import as necessary
 import './DietInfo.css';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import Food from './CreateDiet';
 
 interface DietResDto {
@@ -66,11 +66,20 @@ const DietInfo: React.FC = () => {
   const [dietDiff, setDietDiff] = useState<Diff | null>(null); // State for diff data
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [postExists, setPostExists] = useState<boolean | null>(null);
+  const [postId, setPostId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchDietInfo = async () => {
       try {
         // Fetch diet information
+        const postCheckResponse = await AxiosInstance.get(`/diet/${dietId}/check`);
+        console.log(postCheckResponse);
+        setPostExists(postCheckResponse.data.exists);
+        if (postCheckResponse.data.exists) {
+          setPostId(postCheckResponse.data.postId);
+        }
+
         const response = await AxiosInstance.get(`/diet/${dietId}`);
         console.log(response.data);
 
@@ -113,7 +122,7 @@ const DietInfo: React.FC = () => {
               <strong>Foods:</strong>
               <ul>
                 {dietInfo.foods.map(food => (
-                  <li key={food.food.name}>Name: {food.food.name}</li> // Replace with actual food name if available
+                  <li key={food.food.name}>{food.food.name}</li> // Replace with actual food name if available
                 ))}
               </ul>
             </div>
@@ -133,11 +142,11 @@ const DietInfo: React.FC = () => {
         </div>
       )}
 
-      {dietCount && (
+      {/*{dietCount && (
         <div className="diet-count">
           <h2>Nutrient Evaluation</h2>
 
-          {/* Calories Evaluation */}
+           Calories Evaluation
           {(dietCount.cal.deficient || dietCount.cal.exceeded) && (
             <div>
               <h3>Calories</h3>
@@ -146,7 +155,7 @@ const DietInfo: React.FC = () => {
             </div>
           )}
 
-          {/* Carbohydrates Evaluation */}
+           Carbohydrates Evaluation
           {(dietCount.carbohydrates.deficient || dietCount.carbohydrates.exceeded) && (
             <div>
               <h3>Carbohydrates</h3>
@@ -155,7 +164,7 @@ const DietInfo: React.FC = () => {
             </div>
           )}
 
-          {/* Protein Evaluation */}
+           Protein Evaluation
           {(dietCount.protein.deficient || dietCount.protein.exceeded) && (
             <div>
               <h3>Protein</h3>
@@ -164,7 +173,7 @@ const DietInfo: React.FC = () => {
             </div>
           )}
 
-          {/* Fat Evaluation */}
+           Fat Evaluation
           {(dietCount.fat.deficient || dietCount.fat.exceeded) && (
             <div>
               <h3>Fat</h3>
@@ -173,7 +182,7 @@ const DietInfo: React.FC = () => {
             </div>
           )}
 
-          {/* Sodium Evaluation */}
+           Sodium Evaluation
           {(dietCount.sodium.deficient || dietCount.sodium.exceeded) && (
             <div>
               <h3>Sodium</h3>
@@ -182,7 +191,7 @@ const DietInfo: React.FC = () => {
             </div>
           )}
 
-          {/* Sugars Evaluation */}
+           Sugars Evaluation
           {(dietCount.sugars.deficient || dietCount.sugars.exceeded) && (
             <div>
               <h3>Sugars</h3>
@@ -191,21 +200,21 @@ const DietInfo: React.FC = () => {
             </div>
           )}
         </div>
-      )}
+      )}*/}
 
       {/* Displaying Diff Values */}
       {dietDiff && (
         <>
           <div className="nutrient-diff">
-            <h2>Nutrient Differences</h2>
+            <h2>Nutrient Evaluation</h2>
 
             {/* Calories Difference */}
             {dietDiff.cal !== undefined && (
               <>
                 {dietDiff.cal > 0 ? (
-                  <p><strong>Calories Exceeded by:</strong> {Math.abs(dietDiff.cal)} kcal</p>
+                  <p className="nutrient-diff-exceeded"><strong>Calories Exceeded by:</strong> {Math.abs(dietDiff.cal).toFixed(2)} kcal</p>
                 ) : dietDiff.cal < 0 ? (
-                  <p><strong>Calories Deficient by:</strong> {Math.abs(dietDiff.cal)} kcal</p>
+                  <p className="nutrient-diff-deficient"><strong>Calories Deficient by:</strong> {Math.abs(dietDiff.cal).toFixed(2)} kcal</p>
                 ) : null}
               </>
             )}
@@ -214,9 +223,9 @@ const DietInfo: React.FC = () => {
             {dietDiff.carb !== undefined && (
               <>
                 {dietDiff.carb > 0 ? (
-                  <p><strong>Carbohydrates Exceeded by:</strong> {Math.abs(dietDiff.carb)} g</p>
+                  <p className="nutrient-diff-exceeded"><strong>Carbohydrates Exceeded by:</strong> {Math.abs(dietDiff.carb).toFixed(2)} g</p>
                 ) : dietDiff.carb < 0 ? (
-                  <p><strong>Carbohydrates Deficient by:</strong> {Math.abs(dietDiff.carb)} g</p>
+                  <p className="nutrient-diff-deficient"><strong>Carbohydrates Deficient by:</strong> {Math.abs(dietDiff.carb).toFixed(2)} g</p>
                 ) : null}
               </>
             )}
@@ -225,9 +234,9 @@ const DietInfo: React.FC = () => {
             {dietDiff.protein !== undefined && (
               <>
                 {dietDiff.protein > 0 ? (
-                  <p><strong>Protein Exceeded by:</strong> {Math.abs(dietDiff.protein)} g</p>
+                  <p> className="nutrient-diff-exceeded"<strong>Protein Exceeded by:</strong> {Math.abs(dietDiff.protein).toFixed(2)} g</p>
                 ) : dietDiff.protein < 0 ? (
-                  <p><strong>Protein Deficient by:</strong> {Math.abs(dietDiff.protein)} g</p>
+                  <p className="nutrient-diff-deficient"><strong>Protein Deficient by:</strong> {Math.abs(dietDiff.protein).toFixed(2)} g</p>
                 ) : null}
               </>
             )}
@@ -236,9 +245,9 @@ const DietInfo: React.FC = () => {
             {dietDiff.fat !== undefined && (
               <>
                 {dietDiff.fat > 0 ? (
-                  <p><strong>Fat Exceeded by:</strong> {Math.abs(dietDiff.fat)} g</p>
+                  <p className="nutrient-diff-exceeded"><strong>Fat Exceeded by:</strong> {Math.abs(dietDiff.fat).toFixed(2)} g</p>
                 ) : dietDiff.fat < 0 ? (
-                  <p><strong>Fat Deficient by:</strong> {Math.abs(dietDiff.fat)} g</p>
+                  <p className="nutrient-diff-deficient"><strong>Fat Deficient by:</strong> {Math.abs(dietDiff.fat).toFixed(2)} g</p>
                 ) : null}
               </>
             )}
@@ -247,9 +256,9 @@ const DietInfo: React.FC = () => {
             {dietDiff.sodium !== undefined && (
               <>
                 {dietDiff.sodium > 0 ? (
-                  <p><strong>Sodium Exceeded by:</strong> {Math.abs(dietDiff.sodium)} mg</p>
+                  <p className="nutrient-diff-exceeded"><strong>Sodium Exceeded by:</strong> {Math.abs(dietDiff.sodium).toFixed(2)} mg</p>
                 ) : dietDiff.sodium < 0 ? (
-                  <p><strong>Sodium Deficient by:</strong> {Math.abs(dietDiff.sodium)} mg</p>
+                  <p className="nutrient-diff-deficient"><strong>Sodium Deficient by:</strong> {Math.abs(dietDiff.sodium).toFixed(2)} mg</p>
                 ) : null}
               </>
             )}
@@ -258,17 +267,25 @@ const DietInfo: React.FC = () => {
             {dietDiff.sugars !== undefined && (
               <>
                 {dietDiff.sugars > 0 ? (
-                  <p><strong>Sugars Exceeded by:</strong> {Math.abs(dietDiff.sugars)} g</p>
+                  <p className="nutrient-diff-exceeded"><strong>Sugars Exceeded by:</strong> {Math.abs(dietDiff.sugars).toFixed(2)} g</p>
                 ) : dietDiff.sugars < 0 ? (
-                  <p><strong>Sugars Deficient by:</strong> {Math.abs(dietDiff.sugars)} g</p>
+                  <p className="nutrient-diff-deficient"><strong>Sugars Deficient by:</strong> {Math.abs(dietDiff.sugars).toFixed(2)} g</p>
                 ) : null}
               </>
             )}
           </div>
-          <Link to={`/diet/${dietId}/create-post`} className="create-post-link">
-            Create Post for This Diet
-          </Link>
         </>
+      )}
+      {postExists === false && (
+        <Link to={`/diet/${dietId}/create-post`} className="create-post-link">
+          Create Post for This Diet
+        </Link>
+      )}
+
+      {postExists === true && postId && (
+        <Link to={`/post/${postId}`} className="view-post-link">
+          View Post for This Diet
+        </Link>
       )}
     </div>
   );

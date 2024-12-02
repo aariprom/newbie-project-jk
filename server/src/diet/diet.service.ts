@@ -3,6 +3,7 @@ import { CreateDietReqDto } from './dto/createDietReq.dto';
 import { PrismaService } from '../prisma.service';
 import { DietResDto } from './dto/dietRes.dto';
 import { FoodInDietResDto } from './dto/foodInDietRes.dto';
+import { IsPostedDto } from './dto/isPosted.dto';
 
 @Injectable()
 export class DietService {
@@ -172,6 +173,19 @@ export class DietService {
       }
     });
     return diets.map(diet => new DietResDto(diet));
+  }
+
+  async isDietPosted(dietId: number) {
+    const post = await this.prisma.post.findMany({
+      where: {
+        dietId: dietId,
+      },
+    });
+    if (post.length !== 0) {
+      return new IsPostedDto({ exists: true, postId: post[0].id })
+    } else {
+      return new IsPostedDto({ exists: false })
+    }
   }
 }
 

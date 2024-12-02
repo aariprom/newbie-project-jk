@@ -36,6 +36,10 @@ const CreateDiet: React.FC<CreateDietProps> = ({ date, onDietCreated }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (selectedFoods.length == 0) {
+        setError('Please select at least one food.');
+        return;
+      }
       await axiosInstance.post('/diet', {
         foods: selectedFoods.map(food => food.id),
         type,
@@ -47,7 +51,7 @@ const CreateDiet: React.FC<CreateDietProps> = ({ date, onDietCreated }) => {
       setError(null);
     } catch (err) {
       console.error('Error creating diet:', err);
-      setError('Failed to create diet. Please try again.');
+      setError('Failed to create diet. Check if you already have same type (BREAKFAST | LUNCH | DINNER | OTHERS).');
     }
   };
 

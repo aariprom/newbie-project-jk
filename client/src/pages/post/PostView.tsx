@@ -50,7 +50,6 @@ const PostView: React.FC = () => {
   }, [postId]);
 
   console.log(post);
-  console.log(post?.diet.foods);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;

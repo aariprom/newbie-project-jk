@@ -142,6 +142,7 @@ export class PostService {
             url: true,
           },
         },
+        isPublic: true,
         diet: {
           select: {
             foods: {
@@ -190,5 +191,43 @@ export class PostService {
       },
     });
     return new PostResDto(post);
+  }
+
+  async getPost() {
+    const posts = await this.prisma.post.findMany({
+      where: {
+        isPublic: true,
+      },
+      select: {
+        id: true,
+        userId: true,
+        title: true,
+        content: true,
+        createdDate: true,
+        modifiedDate: true,
+        pictures: {
+          select: {
+            url: true,
+          },
+        },
+        diet: {
+          select: {
+            foods: {
+              select: {
+                food: {
+                  select: {
+                    id: true,
+                    name: true,
+                  }
+                }
+              }
+            },
+            type: true,
+            date: true,
+          }
+        }
+      },
+    });
+    return posts.map(post => new PostResDto(post));
   }
 }

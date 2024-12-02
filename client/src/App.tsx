@@ -10,12 +10,13 @@ import AxiosInstance from './utils/AxiosInstance';
 import Header from './components/header/Header';
 import NotFound from './pages/notfound/NotFound';
 import Profile from './pages/profile/Profile';
-import SearchFood from './pages/food/SearchFood';
 import DietInfo from './pages/diet/DietInfo';
 import DailyDiet from './pages/diet/DailyDiet';
 import CreatePost from './pages/post/CreatePost';
 import EditPost from './pages/post/EditPost';
 import PostView from './pages/post/PostView';
+import FoodSearch from './pages/food/FoodSearch';
+import AllPosts from './pages/post/AllPosts';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -66,7 +67,8 @@ const App: React.FC = () => {
           <Route path="/diet/:dietId/create-post" element={<CreatePost />} />
           <Route path="/diet/daily/:date" element={<DailyDiet />} />
           <Route path="/diet/:dietId" element={<DietInfo />} />
-          <Route path="/search-food" element={<SearchFood />} />
+          <Route path="/search-food" element={<FoodSearch />} />
+          <Route path="/all-posts" element={<AllPosts />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
