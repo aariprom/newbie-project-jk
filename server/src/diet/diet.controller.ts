@@ -51,7 +51,7 @@ export class DietController {
   @Patch('/:dietId')
   @ApiResponse({ status: 200, description: 'Diet item patched successfully. ', type: DietResDto})
   @ApiCommonErrorResponse()
-  async editDiet(@Body() body: EditDietDto, @Param('dietId', ParseIntPipe) dietId: number): Promise<DietResDto> {
+  async editDiet(@Body() body: { foods: number[] }, @Param('dietId', ParseIntPipe) dietId: number): Promise<DietResDto> {
     return this.dietService.editDiet(body, dietId);
   }
 

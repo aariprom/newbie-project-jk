@@ -5,7 +5,7 @@ import { UserService } from '../user/user.service';
 import { Response } from 'express';
 import { TokenService } from './token/token.service';
 import { User } from '@prisma/client';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CredentialDto } from './dto/credential.dto';
 import { UserResDto } from '../user/dto/userRes.dto';
 

@@ -13,12 +13,12 @@ import { PostService } from './post/post.service';
 import { PostController } from './post/post.controller';
 import { PostModule } from './post/post.module';
 import { DietModule } from './diet/diet.module';
-import { PrismaService } from './prisma.service';
+import { PrismaService } from './prisma/prisma.service';
 import { TokenService } from './auth/token/token.service';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { UploadModule } from './upload/upload.module';
-import { PrismaModule } from './prisma.module';
+import { PrismaModule } from './prisma/prisma.module';
 import { StatModule } from './diet/stat/stat.module';
 import { StatService } from './diet/stat/stat.service';
 

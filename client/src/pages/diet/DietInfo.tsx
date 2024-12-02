@@ -3,14 +3,15 @@ import { Link, useParams } from 'react-router-dom'; // Import useParams to get d
 import AxiosInstance from '../../utils/AxiosInstance'; // Adjust import as necessary
 import './DietInfo.css';
 import axios from 'axios';
-import Food from './CreateDiet';
+import { Food } from './CreateDiet';
+import SearchFood from '../../components/searchfood/SearchFood';
 
 interface DietResDto {
   id: number;
   userId: string;
   type: string; // Adjust based on your DietType enum
   date: Date;
-  foods?: { food: typeof Food }[];
+  foods?: Food[];
 }
 
 interface StatDto {
@@ -58,50 +59,86 @@ interface Diff {
   sodium: number;
 }
 
+
 const DietInfo: React.FC = () => {
   const { dietId } = useParams<{ dietId: string }>(); // Get dietId from URL parameters
   const [dietInfo, setDietInfo] = useState<DietResDto | null>(null);
   const [dietStats, setDietStats] = useState<StatDto | null>(null);
   const [dietCount, setDietCount] = useState<Count | null>(null);
   const [dietDiff, setDietDiff] = useState<Diff | null>(null); // State for diff data
+  const [recommendedFoods, setRecommendedFoods] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [postExists, setPostExists] = useState<boolean | null>(null);
   const [postId, setPostId] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedFoods, setEditedFoods] = useState<Food[]>([]);
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setEditedFoods(dietInfo?.foods || []);
+  };
+
+  const handleAddFood = (food: Food) => {
+    setEditedFoods(prev => [...prev, food]);
+  };
+
+  const handleRemoveFood = (foodId: number) => {
+    setEditedFoods(prev => prev.filter(food => food.id !== foodId));
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      await AxiosInstance.patch(`/diet/${dietId}`, {
+        foods: editedFoods.map(food => food.id)
+      });
+      setDietInfo(prev => ({ ...prev!, foods: editedFoods }));
+      setIsEditing(false);
+      // Refetch diet info to get updated stats
+      fetchDietInfo();
+    } catch (error) {
+      console.error('Error saving diet:', error);
+      // Handle error (e.g., show an error message)
+    }
+  };
+
+  const fetchDietInfo = async () => {
+    try {
+      // Fetch diet information
+      const postCheckResponse = await AxiosInstance.get(`/diet/${dietId}/check`);
+      console.log(postCheckResponse);
+      setPostExists(postCheckResponse.data.exists);
+      if (postCheckResponse.data.exists) {
+        setPostId(postCheckResponse.data.postId);
+      }
+
+      const response = await AxiosInstance.get(`/diet/${dietId}`);
+      console.log(response.data);
+
+      const data = response.data
+      data.foods = response.data.foods.map((food: { food: Food; }) => food.food);
+
+      setDietInfo(data); // Assuming response.data matches DietResDto structure
+
+      // Fetch diet statistics and counts
+      const statsResponse = await AxiosInstance.get(`/diet/${dietId}/stat`);
+      setDietStats(statsResponse.data.stat); // Assuming statsResponse.data.stat matches StatDto structure
+      setDietCount(statsResponse.data.count); // Assuming statsResponse.data.count matches Count structure
+      setDietDiff(statsResponse.data.diff); // Assuming statsResponse.data.diff matches Diff structure
+      setRecommendedFoods(statsResponse.data.recommended);
+    } catch (err) {
+      if (axios.isAxiosError(error) && error.response) {
+        setError('Error code: '+error.response.status+', '+error.message);
+      } else {
+        console.error('An unexpected error occurred.');
+      }
+      setError('Failed to fetch diet information.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchDietInfo = async () => {
-      try {
-        // Fetch diet information
-        const postCheckResponse = await AxiosInstance.get(`/diet/${dietId}/check`);
-        console.log(postCheckResponse);
-        setPostExists(postCheckResponse.data.exists);
-        if (postCheckResponse.data.exists) {
-          setPostId(postCheckResponse.data.postId);
-        }
-
-        const response = await AxiosInstance.get(`/diet/${dietId}`);
-        console.log(response.data);
-
-        setDietInfo(response.data); // Assuming response.data matches DietResDto structure
-
-        // Fetch diet statistics and counts
-        const statsResponse = await AxiosInstance.get(`/diet/${dietId}/stat`);
-        setDietStats(statsResponse.data.stat); // Assuming statsResponse.data.stat matches StatDto structure
-        setDietCount(statsResponse.data.count); // Assuming statsResponse.data.count matches Count structure
-        setDietDiff(statsResponse.data.diff); // Assuming statsResponse.data.diff matches Diff structure
-      } catch (err) {
-        if (axios.isAxiosError(error) && error.response) {
-         setError('Error code: '+error.response.status+', '+error.message);
-        } else {
-          console.error('An unexpected error occurred.');
-        }
-        setError('Failed to fetch diet information.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchDietInfo();
   }, [dietId]);
 
@@ -122,11 +159,31 @@ const DietInfo: React.FC = () => {
               <strong>Foods:</strong>
               <ul>
                 {dietInfo.foods.map(food => (
-                  <li key={food.food.name}>{food.food.name}</li> // Replace with actual food name if available
+                  <li key={food.name}>{food.name}</li> // Replace with actual food name if available
                 ))}
               </ul>
             </div>
           )}
+        </div>
+      )}
+
+      {!isEditing ? (
+        <button onClick={handleEditClick} className="edit-button">Edit Foods</button>
+      ) : (
+        <div className="edit-foods-section">
+          <h3>Edit Foods</h3>
+          <SearchFood onFoodSelect={handleAddFood} />
+          <div className="selected-foods">
+            <h4>Selected Foods:</h4>
+            {editedFoods.map(food => (
+              <div key={food.id} className="selected-food-item">
+                <span>{food.name}</span>
+                <button onClick={() => handleRemoveFood(food.id)}>Remove</button>
+              </div>
+            ))}
+          </div>
+          <button onClick={handleSaveEdit} className="save-button">Save Changes</button>
+          <button onClick={() => setIsEditing(false)} className="cancel-button">Cancel</button>
         </div>
       )}
 
@@ -212,9 +269,11 @@ const DietInfo: React.FC = () => {
             {dietDiff.cal !== undefined && (
               <>
                 {dietDiff.cal > 0 ? (
-                  <p className="nutrient-diff-exceeded"><strong>Calories Exceeded by:</strong> {Math.abs(dietDiff.cal).toFixed(2)} kcal</p>
+                  <p className="nutrient-diff-exceeded"><strong>Calories Exceeded
+                    by:</strong> {Math.abs(dietDiff.cal).toFixed(2)} kcal</p>
                 ) : dietDiff.cal < 0 ? (
-                  <p className="nutrient-diff-deficient"><strong>Calories Deficient by:</strong> {Math.abs(dietDiff.cal).toFixed(2)} kcal</p>
+                  <p className="nutrient-diff-deficient"><strong>Calories Deficient
+                    by:</strong> {Math.abs(dietDiff.cal).toFixed(2)} kcal</p>
                 ) : null}
               </>
             )}
@@ -223,9 +282,11 @@ const DietInfo: React.FC = () => {
             {dietDiff.carb !== undefined && (
               <>
                 {dietDiff.carb > 0 ? (
-                  <p className="nutrient-diff-exceeded"><strong>Carbohydrates Exceeded by:</strong> {Math.abs(dietDiff.carb).toFixed(2)} g</p>
+                  <p className="nutrient-diff-exceeded"><strong>Carbohydrates Exceeded
+                    by:</strong> {Math.abs(dietDiff.carb).toFixed(2)} g</p>
                 ) : dietDiff.carb < 0 ? (
-                  <p className="nutrient-diff-deficient"><strong>Carbohydrates Deficient by:</strong> {Math.abs(dietDiff.carb).toFixed(2)} g</p>
+                  <p className="nutrient-diff-deficient"><strong>Carbohydrates Deficient
+                    by:</strong> {Math.abs(dietDiff.carb).toFixed(2)} g</p>
                 ) : null}
               </>
             )}
@@ -234,9 +295,11 @@ const DietInfo: React.FC = () => {
             {dietDiff.protein !== undefined && (
               <>
                 {dietDiff.protein > 0 ? (
-                  <p> className="nutrient-diff-exceeded"<strong>Protein Exceeded by:</strong> {Math.abs(dietDiff.protein).toFixed(2)} g</p>
+                  <p className="nutrient-diff-exceeded"><strong>Protein Exceeded
+                    by:</strong> {Math.abs(dietDiff.protein).toFixed(2)} g</p>
                 ) : dietDiff.protein < 0 ? (
-                  <p className="nutrient-diff-deficient"><strong>Protein Deficient by:</strong> {Math.abs(dietDiff.protein).toFixed(2)} g</p>
+                  <p className="nutrient-diff-deficient"><strong>Protein Deficient
+                    by:</strong> {Math.abs(dietDiff.protein).toFixed(2)} g</p>
                 ) : null}
               </>
             )}
@@ -245,9 +308,11 @@ const DietInfo: React.FC = () => {
             {dietDiff.fat !== undefined && (
               <>
                 {dietDiff.fat > 0 ? (
-                  <p className="nutrient-diff-exceeded"><strong>Fat Exceeded by:</strong> {Math.abs(dietDiff.fat).toFixed(2)} g</p>
+                  <p className="nutrient-diff-exceeded"><strong>Fat Exceeded
+                    by:</strong> {Math.abs(dietDiff.fat).toFixed(2)} g</p>
                 ) : dietDiff.fat < 0 ? (
-                  <p className="nutrient-diff-deficient"><strong>Fat Deficient by:</strong> {Math.abs(dietDiff.fat).toFixed(2)} g</p>
+                  <p className="nutrient-diff-deficient"><strong>Fat Deficient
+                    by:</strong> {Math.abs(dietDiff.fat).toFixed(2)} g</p>
                 ) : null}
               </>
             )}
@@ -256,9 +321,11 @@ const DietInfo: React.FC = () => {
             {dietDiff.sodium !== undefined && (
               <>
                 {dietDiff.sodium > 0 ? (
-                  <p className="nutrient-diff-exceeded"><strong>Sodium Exceeded by:</strong> {Math.abs(dietDiff.sodium).toFixed(2)} mg</p>
+                  <p className="nutrient-diff-exceeded"><strong>Sodium Exceeded
+                    by:</strong> {Math.abs(dietDiff.sodium).toFixed(2)} mg</p>
                 ) : dietDiff.sodium < 0 ? (
-                  <p className="nutrient-diff-deficient"><strong>Sodium Deficient by:</strong> {Math.abs(dietDiff.sodium).toFixed(2)} mg</p>
+                  <p className="nutrient-diff-deficient"><strong>Sodium Deficient
+                    by:</strong> {Math.abs(dietDiff.sodium).toFixed(2)} mg</p>
                 ) : null}
               </>
             )}
@@ -267,15 +334,33 @@ const DietInfo: React.FC = () => {
             {dietDiff.sugars !== undefined && (
               <>
                 {dietDiff.sugars > 0 ? (
-                  <p className="nutrient-diff-exceeded"><strong>Sugars Exceeded by:</strong> {Math.abs(dietDiff.sugars).toFixed(2)} g</p>
+                  <p className="nutrient-diff-exceeded"><strong>Sugars Exceeded
+                    by:</strong> {Math.abs(dietDiff.sugars).toFixed(2)} g</p>
                 ) : dietDiff.sugars < 0 ? (
-                  <p className="nutrient-diff-deficient"><strong>Sugars Deficient by:</strong> {Math.abs(dietDiff.sugars).toFixed(2)} g</p>
+                  <p className="nutrient-diff-deficient"><strong>Sugars Deficient
+                    by:</strong> {Math.abs(dietDiff.sugars).toFixed(2)} g</p>
                 ) : null}
               </>
             )}
           </div>
         </>
       )}
+
+      <div className="recommended-foods">
+        <h3>Recommended Foods</h3>
+        {recommendedFoods.length > 0 ? (
+          <ul>
+            {recommendedFoods.map((food, index) => (
+              <li key={index}>
+                {food.name} - {food.reason}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No specific food recommendations at this time.</p>
+        )}
+      </div>
+
       {postExists === false && (
         <Link to={`/diet/${dietId}/create-post`} className="create-post-link">
           Create Post for This Diet

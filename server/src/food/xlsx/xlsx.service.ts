@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as XLSX from 'xlsx';
 import { promises as fs } from 'fs';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from '../../prisma.service'
+import { PrismaService } from '../../prisma/prisma.service'
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { createFoodDto } from '../dto/createFood.dto';
