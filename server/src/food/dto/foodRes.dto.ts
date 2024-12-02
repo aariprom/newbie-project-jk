@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Food } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -8,6 +8,11 @@ export class FoodResDto {
   @IsNotEmpty()
   @IsNumber()
   id!: number;
+
+  @ApiProperty({ description: 'Name of the food item', example: 'Pizza' })
+  @IsNotEmpty()
+  @IsString()
+  name!: string;
 
   @ApiProperty({ description: 'Calories in the food item', example: 250 })
   @IsNotEmpty()

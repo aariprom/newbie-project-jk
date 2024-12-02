@@ -153,18 +153,21 @@ export class PostService {
                   }
                 }
               }
-            }
+            },
+            type: true,
+            date: true,
           }
         }
       },
     });
     if (!post) {
-      throw new BadRequestException('No post found');
+      return null;
     }
     return new PostResDto(post);
   }
 
   async editPost(postId: number, data: EditPostDto) {
+    console.log(postId, data);
     const post = await this.prisma.post.update({
       data: {
         ...data,

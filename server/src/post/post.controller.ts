@@ -73,7 +73,8 @@ export class PostController {
     }
     const urls = await this.uploadService.uploadPostImages(files);
     console.log(urls);
-    return this.postService.linkPicToPost(urls, postId);
+    await this.postService.linkPicToPost(urls, postId);
+    return urls;
   }
 
   @Delete('/deleteAll')
@@ -82,7 +83,7 @@ export class PostController {
     return this.postService.deletePostByUserId(user.id);
   }
 
-  @Patch('/edit/:postId')
+  @Patch('/:postId')
   @ApiCommonErrorResponse()
   async editPost(@Param('postId', ParseIntPipe) postId: number, @Body() body: EditPostDto) {
     return this.postService.editPost(postId, body);

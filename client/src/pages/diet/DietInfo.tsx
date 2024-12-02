@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom'; // Import useParams to get dietId from URL
+import { Link, useParams } from 'react-router-dom'; // Import useParams to get dietId from URL
 import AxiosInstance from '../../utils/AxiosInstance'; // Adjust import as necessary
 import './DietInfo.css';
 import axios, { AxiosError } from 'axios';
+import Food from './CreateDiet';
 
 interface DietResDto {
   id: number;
   userId: string;
   type: string; // Adjust based on your DietType enum
   date: Date;
-  foods?: number[];
+  foods?: { food: typeof Food }[];
 }
 
 interface StatDto {
@@ -71,6 +72,8 @@ const DietInfo: React.FC = () => {
       try {
         // Fetch diet information
         const response = await AxiosInstance.get(`/diet/${dietId}`);
+        console.log(response.data);
+
         setDietInfo(response.data); // Assuming response.data matches DietResDto structure
 
         // Fetch diet statistics and counts
@@ -109,8 +112,8 @@ const DietInfo: React.FC = () => {
             <div>
               <strong>Foods:</strong>
               <ul>
-                {dietInfo.foods.map(foodId => (
-                  <li key={foodId}>Food ID: {foodId}</li> // Replace with actual food name if available
+                {dietInfo.foods.map(food => (
+                  <li key={food.food.name}>Name: {food.food.name}</li> // Replace with actual food name if available
                 ))}
               </ul>
             </div>
@@ -192,75 +195,80 @@ const DietInfo: React.FC = () => {
 
       {/* Displaying Diff Values */}
       {dietDiff && (
-        <div className="nutrient-diff">
-          <h2>Nutrient Differences</h2>
+        <>
+          <div className="nutrient-diff">
+            <h2>Nutrient Differences</h2>
 
-          {/* Calories Difference */}
-          {dietDiff.cal !== undefined && (
-            <>
-              {dietDiff.cal > 0 ? (
-                <p><strong>Calories Exceeded by:</strong> {Math.abs(dietDiff.cal)} kcal</p>
-              ) : dietDiff.cal < 0 ? (
-                <p><strong>Calories Deficient by:</strong> {Math.abs(dietDiff.cal)} kcal</p>
-              ) : null}
-            </>
-          )}
+            {/* Calories Difference */}
+            {dietDiff.cal !== undefined && (
+              <>
+                {dietDiff.cal > 0 ? (
+                  <p><strong>Calories Exceeded by:</strong> {Math.abs(dietDiff.cal)} kcal</p>
+                ) : dietDiff.cal < 0 ? (
+                  <p><strong>Calories Deficient by:</strong> {Math.abs(dietDiff.cal)} kcal</p>
+                ) : null}
+              </>
+            )}
 
-          {/* Carbohydrates Difference */}
-          {dietDiff.carb !== undefined && (
-            <>
-              {dietDiff.carb > 0 ? (
-                <p><strong>Carbohydrates Exceeded by:</strong> {Math.abs(dietDiff.carb)} g</p>
-              ) : dietDiff.carb < 0 ? (
-                <p><strong>Carbohydrates Deficient by:</strong> {Math.abs(dietDiff.carb)} g</p>
-              ) : null}
-            </>
-          )}
+            {/* Carbohydrates Difference */}
+            {dietDiff.carb !== undefined && (
+              <>
+                {dietDiff.carb > 0 ? (
+                  <p><strong>Carbohydrates Exceeded by:</strong> {Math.abs(dietDiff.carb)} g</p>
+                ) : dietDiff.carb < 0 ? (
+                  <p><strong>Carbohydrates Deficient by:</strong> {Math.abs(dietDiff.carb)} g</p>
+                ) : null}
+              </>
+            )}
 
-          {/* Protein Difference */}
-          {dietDiff.protein !== undefined && (
-            <>
-              {dietDiff.protein > 0 ? (
-                <p><strong>Protein Exceeded by:</strong> {Math.abs(dietDiff.protein)} g</p>
-              ) : dietDiff.protein < 0 ? (
-                <p><strong>Protein Deficient by:</strong> {Math.abs(dietDiff.protein)} g</p>
-              ) : null}
-            </>
-          )}
+            {/* Protein Difference */}
+            {dietDiff.protein !== undefined && (
+              <>
+                {dietDiff.protein > 0 ? (
+                  <p><strong>Protein Exceeded by:</strong> {Math.abs(dietDiff.protein)} g</p>
+                ) : dietDiff.protein < 0 ? (
+                  <p><strong>Protein Deficient by:</strong> {Math.abs(dietDiff.protein)} g</p>
+                ) : null}
+              </>
+            )}
 
-          {/* Fat Difference */}
-          {dietDiff.fat !== undefined && (
-            <>
-              {dietDiff.fat > 0 ? (
-                <p><strong>Fat Exceeded by:</strong> {Math.abs(dietDiff.fat)} g</p>
-              ) : dietDiff.fat < 0 ? (
-                <p><strong>Fat Deficient by:</strong> {Math.abs(dietDiff.fat)} g</p>
-              ) : null}
-            </>
-          )}
+            {/* Fat Difference */}
+            {dietDiff.fat !== undefined && (
+              <>
+                {dietDiff.fat > 0 ? (
+                  <p><strong>Fat Exceeded by:</strong> {Math.abs(dietDiff.fat)} g</p>
+                ) : dietDiff.fat < 0 ? (
+                  <p><strong>Fat Deficient by:</strong> {Math.abs(dietDiff.fat)} g</p>
+                ) : null}
+              </>
+            )}
 
-          {/* Sodium Difference */}
-          {dietDiff.sodium !== undefined && (
-            <>
-              {dietDiff.sodium > 0 ? (
-                <p><strong>Sodium Exceeded by:</strong> {Math.abs(dietDiff.sodium)} mg</p>
-              ) : dietDiff.sodium < 0 ? (
-                <p><strong>Sodium Deficient by:</strong> {Math.abs(dietDiff.sodium)} mg</p>
-              ) : null}
-            </>
-          )}
+            {/* Sodium Difference */}
+            {dietDiff.sodium !== undefined && (
+              <>
+                {dietDiff.sodium > 0 ? (
+                  <p><strong>Sodium Exceeded by:</strong> {Math.abs(dietDiff.sodium)} mg</p>
+                ) : dietDiff.sodium < 0 ? (
+                  <p><strong>Sodium Deficient by:</strong> {Math.abs(dietDiff.sodium)} mg</p>
+                ) : null}
+              </>
+            )}
 
-          {/* Sugars Difference */}
-          {dietDiff.sugars !== undefined && (
-            <>
-              {dietDiff.sugars > 0 ? (
-                <p><strong>Sugars Exceeded by:</strong> {Math.abs(dietDiff.sugars)} g</p>
-              ) : dietDiff.sugars < 0 ? (
-                <p><strong>Sugars Deficient by:</strong> {Math.abs(dietDiff.sugars)} g</p>
-              ) : null}
-            </>
-          )}
-        </div>
+            {/* Sugars Difference */}
+            {dietDiff.sugars !== undefined && (
+              <>
+                {dietDiff.sugars > 0 ? (
+                  <p><strong>Sugars Exceeded by:</strong> {Math.abs(dietDiff.sugars)} g</p>
+                ) : dietDiff.sugars < 0 ? (
+                  <p><strong>Sugars Deficient by:</strong> {Math.abs(dietDiff.sugars)} g</p>
+                ) : null}
+              </>
+            )}
+          </div>
+          <Link to={`/diet/${dietId}/create-post`} className="create-post-link">
+            Create Post for This Diet
+          </Link>
+        </>
       )}
     </div>
   );

@@ -24,7 +24,7 @@ const Calendar: React.FC = () => {
   const handleDateClick = (day: number) => {
     // Navigate to the diet page with the selected date
     const selectedDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day+1);
-    navigate(`/diet/${selectedDate.toISOString().split('T')[0]}`); // Format date as YYYY-MM-DD
+    navigate(`/diet/daily/${selectedDate.toISOString().split('T')[0]}`); // Format date as YYYY-MM-DD
   };
 
   return (

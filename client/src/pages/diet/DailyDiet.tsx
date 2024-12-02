@@ -50,7 +50,6 @@ const DailyDiet: React.FC = () => {
   return (
     <div className="daily-diet-container">
       <h2>Diets for {date}</h2>
-      <CreateDiet date={date || ''} onDietCreated={handleDietCreated} />
       {diets.length === 0 ? (
         <p>No diets recorded for this date.</p>
       ) : (
@@ -63,6 +62,7 @@ const DailyDiet: React.FC = () => {
           </div>
         ))
       )}
+      <CreateDiet date={date || ''} onDietCreated={handleDietCreated} />
     </div>
   );
 };

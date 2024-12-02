@@ -50,9 +50,6 @@ const Dashboard = () => {
         <h1>Dashboard</h1>
         {userData ? (
           <div>
-            <p>Welcome back, {userData.id}!</p>
-            <p>Email: {userData.email}</p>
-            <p>Modify Profile<Link to='/profile'></Link></p>
             {/* todo: show calendar + diet, shortcut to create diet, monthly status */}
             <Calendar />
             {/* Add more user-specific data here */}

@@ -1,9 +1,7 @@
-import React, { FormEvent, useState } from 'react';
-import axios from 'axios';
-import api from '../../utils/AxiosInstance';
-import './Login.css';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import AxiosInstance from '../../utils/AxiosInstance';
+import './Login.css';
+import { useNavigate } from 'react-router-dom';
 
 // Define the login request interface
 interface LoginRequest {

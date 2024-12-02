@@ -111,7 +111,12 @@ export class DietService {
         userId: true,
         foods: {
           select: {
-            foodId: true,
+            food: {
+              select: {
+                id: true,
+                name: true,
+              }
+            }
           }
         },
         type: true,

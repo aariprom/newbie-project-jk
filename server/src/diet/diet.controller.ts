@@ -36,7 +36,7 @@ export class DietController {
   @ApiResponse({ status: 200, description: 'Get diet for given diet id. '})
   @ApiCommonErrorResponse()
   async getDiet(@Param('dietId', ParseIntPipe) dietId: number): Promise<DietResDto> {
-    return this.dietService.getDietByDietId(dietId)
+    return this.dietService.getDietByDietId(dietId);
   }
 
   @Delete('/:dietId')

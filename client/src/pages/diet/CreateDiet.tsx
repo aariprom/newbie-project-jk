@@ -2,6 +2,18 @@
 import React, { useState } from 'react';
 import axiosInstance from '../../utils/AxiosInstance';
 import './CreateDiet.css';
+import SearchFood from '../../components/searchfood/SearchFood';
+
+export interface Food {
+  id: number;
+  name: string;
+  calories: number;
+  protein: number;
+  carbohydrates: number;
+  fat: number;
+  sugars: number;
+  sodium: number;
+}
 
 interface CreateDietProps {
   date: string;
@@ -10,20 +22,28 @@ interface CreateDietProps {
 
 const CreateDiet: React.FC<CreateDietProps> = ({ date, onDietCreated }) => {
   const [type, setType] = useState<string>('');
-  const [foods, setFoods] = useState<number[]>([]);
+  const [selectedFoods, setSelectedFoods] = useState<Food[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  const handleFoodSelect = (food: Food) => {
+    setSelectedFoods(prev => [...prev, food]);
+  };
+
+  const handleRemoveFood = (foodId: number) => {
+    setSelectedFoods(prev => prev.filter(food => food.id !== foodId));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axiosInstance.post('/diet/create', {
-        foods,
+      await axiosInstance.post('/diet', {
+        foods: selectedFoods.map(food => food.id),
         type,
         date,
       });
-      onDietCreated(); // Callback to refresh the diet list
+      onDietCreated();
       setType('');
-      setFoods([]);
+      setSelectedFoods([]);
       setError(null);
     } catch (err) {
       console.error('Error creating diet:', err);
@@ -51,13 +71,20 @@ const CreateDiet: React.FC<CreateDietProps> = ({ date, onDietCreated }) => {
           </select>
         </div>
         <div>
-          <label>Foods:</label>
-          <p>Food search functionality to be implemented</p>
-          {/* Placeholder for food search and selection */}
+          <h4>Selected Foods:</h4>
+          {selectedFoods.map(food => (
+            <div key={food.id}>
+              {food.name} - {food.calories} calories
+              <button type="button" onClick={() => handleRemoveFood(food.id)}>Remove</button>
+            </div>
+          ))}
         </div>
         <button type="submit">Create Diet</button>
       </form>
       {error && <p className="error-message">{error}</p>}
+
+      <h4>Search and Add Foods:</h4>
+      <SearchFood onFoodSelect={handleFoodSelect} />
     </div>
   );
 };

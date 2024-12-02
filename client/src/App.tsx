@@ -10,10 +10,12 @@ import AxiosInstance from './utils/AxiosInstance';
 import Header from './components/header/Header';
 import NotFound from './pages/notfound/NotFound';
 import Profile from './pages/profile/Profile';
-import EditProfile from './pages/profile/EditProfile';
 import SearchFood from './pages/food/SearchFood';
 import DietInfo from './pages/diet/DietInfo';
 import DailyDiet from './pages/diet/DailyDiet';
+import CreatePost from './pages/post/CreatePost';
+import EditPost from './pages/post/EditPost';
+import PostView from './pages/post/PostView';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -51,7 +53,7 @@ const App: React.FC = () => {
       <div className="App">
         <Header isAuthenticated={isAuthenticated} loading={loading} handleLogout={handleLogout} />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home isAuthenticated={isAuthenticated} />} />
           <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard />} />
@@ -59,7 +61,10 @@ const App: React.FC = () => {
           <Route path="/profile"
             element={<Profile isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />}
           />
-          <Route path="/diet/:date" element={<DailyDiet />} />
+          <Route path="/post/:postId" element={<PostView />} />
+          <Route path="/post/:postId/edit" element={<EditPost />} />
+          <Route path="/diet/:dietId/create-post" element={<CreatePost />} />
+          <Route path="/diet/daily/:date" element={<DailyDiet />} />
           <Route path="/diet/:dietId" element={<DietInfo />} />
           <Route path="/search-food" element={<SearchFood />} />
           <Route path="*" element={<NotFound />} />

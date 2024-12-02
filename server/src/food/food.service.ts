@@ -112,6 +112,7 @@ export class FoodService {
       where: whereClause,
       select: {
         id: true,
+        name: true,
         calories: true,
         carbohydrates: true,
         protein: true,
