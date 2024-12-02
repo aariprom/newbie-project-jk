@@ -17,6 +17,7 @@ import EditPost from './pages/post/EditPost';
 import PostView from './pages/post/PostView';
 import FoodSearch from './pages/food/FoodSearch';
 import AllPosts from './pages/post/AllPosts';
+import CreateFood from './pages/food/CreateFood';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -62,6 +63,7 @@ const App: React.FC = () => {
           <Route path="/profile"
             element={<Profile isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />}
           />
+          <Route path="/create-food" element={<CreateFood />} />
           <Route path="/post/:postId" element={<PostView />} />
           <Route path="/post/:postId/edit" element={<EditPost />} />
           <Route path="/diet/:dietId/create-post" element={<CreatePost />} />

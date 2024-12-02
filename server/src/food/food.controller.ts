@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query, UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FoodService } from './food.service';
 import { FavFoodService } from './favFood/favFood.service';
 import { XlsxService } from './xlsx/xlsx.service';
@@ -9,13 +20,16 @@ import { searchFoodQueryDto } from './dto/searchFoodQueryDto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FoodResDto } from './dto/foodRes.dto';
 import { ApiCommonErrorResponse } from '../swagger-common-response.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadService } from '../upload/upload.service';
 
 @ApiTags('Food')
 @Controller('food')
 export class FoodController {
   constructor(private readonly foodService: FoodService,
               private readonly favFoodService: FavFoodService,
-              private readonly xlsxService: XlsxService,) {
+              private readonly xlsxService: XlsxService,
+              private readonly uploadService: UploadService,) {
   }
 
   @Get('/search')
@@ -68,6 +82,29 @@ export class FoodController {
     return 'Removed food item from favorites.'
   }
 
+  /*@Post('/xlsx')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      fileFilter: (req, file, cb) => {
+        // Ensure file is an XLSX file
+        if (file.mimetype !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+          return cb(new BadRequestException('Only XLSX files are allowed!'), false);
+        }
+        cb(null, true);
+      },
+      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    }),
+  )
+  async uploadXlsxFile(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+    const url = await this.uploadService.uploadXlsxFile(file);
+    const key = url.url.split('/').slice(3).join('/');
+    const localPath = await this.uploadService.downloadFile(key);
+    await
+    return { message: 'File uploaded successfully', url: url };
+  }*/
   /******************** local / dev only! ***********************/
 
   @Get('/reset')

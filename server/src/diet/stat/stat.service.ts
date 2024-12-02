@@ -1,12 +1,13 @@
 import { DailyConsumeService } from '../dailyConsume.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { StatDto } from './dto/stat.dto';
 import { AggregatedStatDto } from './dto/AggregatedStat.dto';
 import { NutrientStatus } from './type/nutientStat.dto';
 import { Count } from './type/count.type';
 import { Diff } from './type/diff.type';
 import { StatResDto } from '../dto/statRes.dto';
+import { FoodResDto } from '../../food/dto/foodRes.dto';
 
 @Injectable()
 export class StatService {
@@ -55,15 +56,9 @@ export class StatService {
     const count = this.countNutrientIssues(alert.msg);
     const diff = alert.diff;
 
-    /*
-    todo:
-     return array of foods that fits diff array
-     each food should? contain foodId, name, and nutrients
-     frontend will support to instantly add recommended food to diet
-    const recommendations =
-     */
+    const recommendations = await this.recommendedFoods(diff);
 
-    return new StatResDto({ stat: new StatDto(stat), count: count, diff: diff});
+    return new StatResDto({ stat: new StatDto(stat), count: count, diff: diff, recommended: recommendations });
   }
 
   async getDailyStats(userId: string, date: Date) {
@@ -230,5 +225,47 @@ export class StatService {
       diff: diff,
       msg: msg,
     };
+  }
+
+  async recommendedFoods(diff: Diff) {
+    const nutrientConditions: any[] = [];
+
+    if (diff.carb < 0) {
+      nutrientConditions.push({ carbohydrates: { gte: Math.abs(diff.carb) } });
+    } else if (diff.carb > 0) {
+      nutrientConditions.push({ carbohydrates: { lte: diff.carb } });
+    }
+
+    if (diff.fat < 0) {
+      nutrientConditions.push({ fat: { gte: Math.abs(diff.fat) } });
+    } else if (diff.fat > 0) {
+      nutrientConditions.push({ fat: { lte: diff.fat } });
+    }
+
+    if (diff.protein < 0) {
+      nutrientConditions.push({ protein: { gte: Math.abs(diff.protein) } });
+    } else if (diff.protein > 0) {
+      nutrientConditions.push({ protein: { lte: diff.protein } });
+    }
+
+    if (diff.sugars < 0) {
+      nutrientConditions.push({ sugars: { gte: Math.abs(diff.sugars) } });
+    } else if (diff.sugars > 0) {
+      nutrientConditions.push({ sugars: { lte: diff.sugars } });
+    }
+
+    if (diff.sodium < 0) {
+      nutrientConditions.push({ sodium: { gte: Math.abs(diff.sodium) } });
+    } else if (diff.sodium > 0) {
+      nutrientConditions.push({ sodium: { lte: diff.sodium } });
+    }
+
+    const foods = await this.prisma.food.findMany({
+      where: {
+        AND: nutrientConditions,
+      },
+    });
+
+    return foods.map(food => new FoodResDto(food));
   }
 }

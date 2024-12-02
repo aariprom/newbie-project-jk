@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, UploadedFile } from '@nestjs/common';
 import { S3Service } from './S3/s3.service';
 
 @Injectable()
@@ -28,5 +28,23 @@ export class UploadService {
       console.error('Error uploading files to S3', error);
       throw new InternalServerErrorException('Failed to upload files to S3');
     }
+  }
+
+  async uploadXlsxFile(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    const buffer = file.buffer; // Buffer of the file
+    const mimetype = file.mimetype; // MIME type
+    const folder = 'xlsx-files'; // Folder name in S3
+
+    const s3Url = await this.s3Service.uploadFile(buffer, folder, mimetype);
+    return { message: 'File uploaded successfully', url: s3Url };
+  }
+
+  async downloadFile(key: string) {
+    const localPath = await this.s3Service.downloadFile(key, './download');
+    return { message: 'File downloaded successfully', localPath };
   }
 }

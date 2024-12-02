@@ -28,6 +28,11 @@ export class UserController {
   }
 
   @Post('/profile/upload')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Upload profile image.',
+    type: UploadImageReqDto,
+  })
   @UseInterceptors(FileInterceptor('file', {
     fileFilter: (req, file, cb) => {
       console.log(req, file);
@@ -38,11 +43,6 @@ export class UserController {
     },
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   }))
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'Upload profile image.',
-    type: UploadImageReqDto,
-  })
   async uploadProfileImage(
     @CurrentUser() user: User,
     @UploadedFile() file: Express.Multer.File

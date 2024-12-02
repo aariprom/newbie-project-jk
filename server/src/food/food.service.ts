@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { createFoodDto } from './dto/createFood.dto';
 import { searchFoodQueryDto } from './dto/searchFoodQueryDto';
 import { FoodResDto } from './dto/foodRes.dto';

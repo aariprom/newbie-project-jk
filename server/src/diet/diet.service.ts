@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDietReqDto } from './dto/createDietReq.dto';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { DietResDto } from './dto/dietRes.dto';
 import { FoodInDietResDto } from './dto/foodInDietRes.dto';
 import { IsPostedDto } from './dto/isPosted.dto';
@@ -50,28 +50,38 @@ export class DietService {
     }
   }
 
-  async editDiet(data: any, dietId: number): Promise<DietResDto> {
-    const diet = await this.prisma.diet.update({
+  async editDiet(foods: { foods: number[] }, dietId: number) {
+    console.log(foods);
+    await this.prisma.foodsInDiet.deleteMany({
       where: {
-        id: dietId,
-      },
-      data: data,
-      select: {
-        id: true,
-        userId: true,
-        foods: {
-          select: {
-            foodId: true,
-          }
-        },
-        type: true,
-        date: true,
+        diet: {
+          id: dietId,
+        }
       }
     });
-    if (!diet) {
-      throw new NotFoundException('No diets are found for given diet id.');
+    const promises = foods.foods.map((foodId) =>
+      this.prisma.foodsInDiet.create({
+        data: {
+          food: {
+            connect: {
+              id: foodId,
+            },
+          },
+          diet: {
+            connect: {
+              id: dietId,
+            }
+          }
+        },
+      })
+    );
+    try {
+      await Promise.all(promises);
+      return new DietResDto(await this.prisma.diet.findUnique({ where: { id: dietId } }));
+    } catch (error) {
+      console.error('Error removing foods from diet:', error);
+      throw error;
     }
-    return new DietResDto(diet);
   }
 
   async getDietByUserId(userId: string) {

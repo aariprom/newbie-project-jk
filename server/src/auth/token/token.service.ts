@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
-import { PrismaService } from '../../prisma.service'
+import { PrismaService } from '../../prisma/prisma.service'
 
 type TokenInfo = { token: string, userId: string };
 
