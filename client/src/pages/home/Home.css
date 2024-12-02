@@ -25,3 +25,11 @@
 .home-button:hover {
     background-color: #166fe5;
 }
+
+.food-search-section {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+

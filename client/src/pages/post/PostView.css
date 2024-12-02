@@ -1,0 +1,104 @@
+.post-view-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.post-view-container h2 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.post-metadata {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.post-content {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.post-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.post-visibility {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.edit-post-link {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.edit-post-link:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .post-view-container {
+        padding: 15px;
+    }
+
+    .post-view-container h2 {
+        font-size: 24px;
+    }
+
+    .post-content {
+        font-size: 14px;
+    }
+}
+
+.diet-info {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.diet-info h3 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.diet-info h4 {
+    font-size: 18px;
+    color: #444;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.food-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.food-list li {
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    display: inline-block;
+    margin-right: 5px;
+}

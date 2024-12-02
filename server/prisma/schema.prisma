@@ -7,6 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// 1. Credential: id, pw, (email)
+// 2. personal info
+// 2-1. business logic related: age, height, weight, sex, level
+// - these are used to calculate daily recommended amount of nutrients
+// 2-2. profile: profilePicUrl, privateProfile
+// - profile and setting
+// 3. db related: createdDate, modifiedDate
+// 4. diets, customFoods, posts, favFoods
 model User {
   id             String        @id @unique
   pw             String
@@ -25,11 +33,17 @@ model User {
   favFoods       FavFood[]
   RefreshToken   RefreshToken?
   privateProfile Boolean       @default(true)
-  ProfilePic     ProfilePic[]
 
   @@unique([id, email])
 }
 
+// 1. identifier: id
+// 2. info
+// 2-1. nutrients: cal, carb, fat, protein, sugars, sodium
+// 2-2. user
+// - to chekck if custom food
+// 2-3. other data: name, type, category
+// 3. db related: favFoods, FoodsInDiet
 model Food {
   id            Int           @id @default(autoincrement())
   user          User?         @relation(fields: [userId], references: [id])
@@ -56,6 +70,7 @@ model FavFood {
   @@unique([userId, foodId])
 }
 
+// Diet-Post: 1-1
 model Diet {
   id     Int           @id @default(autoincrement())
   user   User          @relation(fields: [userId], references: [id])
@@ -68,6 +83,7 @@ model Diet {
   @@unique([type, date, userId])
 }
 
+// Diet-Food: M-M
 model FoodsInDiet {
   diet   Diet @relation(fields: [dietId], references: [id], onDelete: Cascade)
   dietId Int
@@ -83,12 +99,7 @@ model Picture {
   postId Int?
 }
 
-model ProfilePic {
-  url    String  @unique
-  user   User?   @relation(fields: [userId], references: [id])
-  userId String?
-}
-
+// Diet-Post: 1-1
 model Post {
   id           Int       @id @default(autoincrement())
   user         User      @relation(fields: [userId], references: [id])
@@ -103,9 +114,12 @@ model Post {
   modifiedDate DateTime
 }
 
+// Auth process
+// If access token is invalid but refresh token presents,
+// retrieve id from token and compared to token of extracted id from db
 model RefreshToken {
   token  String @id
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @unique
 }
 

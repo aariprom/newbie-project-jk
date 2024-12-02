@@ -5,18 +5,19 @@ import { FoodType } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class searchFoodQueryDto {
-  @ApiProperty({ required: false })
+
+  @ApiProperty({ description: 'Search food by name', required: false, example: 'Pizza' })
   @IsString()
   @IsOptional()
   name?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Type of food to search for', required: false, example: 'VEGETABLE' })
   @IsString()
   @IsFoodType()
   @IsOptional()
   type?: FoodType;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Category ID (1-29)', required: false, example: 5 })
   @IsNumber()
   @Min(1)
   @Max(29)
@@ -24,92 +25,92 @@ export class searchFoodQueryDto {
   @Type(() => Number)
   category?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Minimum calories', required: false, example: 100 })
   @IsNumber()
+  @Min(0)
   @IsOptional()
   @Type(() => Number)
-  @Min(0)  // Ensure minCalories is at least 0
   minCalories?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Maximum calories', required: false, example: 500 })
   @IsNumber()
+  @Max(999999)
   @IsOptional()
   @Type(() => Number)
-  @Max(999999)
   maxCalories?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Minimum protein content in grams', required: false, example: 5 })
   @IsNumber()
+  @Min(0)
   @IsOptional()
   @Type(() => Number)
-  @Min(0)  // Ensure minProtein is at least 0
   minProtein?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Maximum protein content in grams', required: false, example: 50 })
   @IsNumber()
+  @Max(999999)
   @IsOptional()
   @Type(() => Number)
-  @Max(999999)
   maxProtein?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Minimum carbohydrates content in grams', required: false, example: 10 })
   @IsNumber()
+  @Min(0)
   @IsOptional()
   @Type(() => Number)
-  @Min(0)  // Ensure minCarbohydrates is at least 0
   minCarbohydrates?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Maximum carbohydrates content in grams', required: false, example: 100 })
   @IsNumber()
+  @Max(999999)
   @IsOptional()
   @Type(() => Number)
-  @Max(999999)
   maxCarbohydrates?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Minimum fat content in grams', required: false, example: 1 })
   @IsNumber()
+  @Min(0)
   @IsOptional()
   @Type(() => Number)
-  @Min(0)  // Ensure minFat is at least 0
   minFat?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Maximum fat content in grams', required: false, example: 20 })
   @IsNumber()
+  @Max(999999)
   @IsOptional()
   @Type(() => Number)
-  @Max(999999)
   maxFat?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Minimum sugars content in grams', required: false, example: 0 })
   @IsNumber()
+  @Min(0)
   @IsOptional()
   @Type(() => Number)
-  @Min(0)  // Ensure minSugars is at least 0
   minSugars?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Maximum sugars content in grams', required: false, example: 15 })
   @IsNumber()
+  @Max(999999)
   @IsOptional()
   @Type(() => Number)
-  @Max(999999)
   maxSugars?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Minimum sodium content in milligrams', required: false, example: 0 })
   @IsNumber()
+  @Min(0)
   @IsOptional()
   @Type(() => Number)
-  @Min(0)  // Ensure minSodium is at least 0
   minSodium?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'Maximum sodium content in milligrams', required: false, example: 500 })
   @IsNumber()
+  @Max(999999)
   @IsOptional()
   @Type(() => Number)
-  @Max(999999)
   maxSodium?: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ description: 'User ID associated with the food items', required: false, example: 'user123' })
   @IsOptional()
-  @Type(() => String)
+  @IsString()
   userId?: string;
 }

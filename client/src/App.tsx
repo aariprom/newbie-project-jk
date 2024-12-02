@@ -10,9 +10,13 @@ import AxiosInstance from './utils/AxiosInstance';
 import Header from './components/header/Header';
 import NotFound from './pages/notfound/NotFound';
 import Profile from './pages/profile/Profile';
-import EditProfile from './pages/profile/EditProfile';
-import SearchFood from './pages/food/SearchFood';
 import DietInfo from './pages/diet/DietInfo';
+import DailyDiet from './pages/diet/DailyDiet';
+import CreatePost from './pages/post/CreatePost';
+import EditPost from './pages/post/EditPost';
+import PostView from './pages/post/PostView';
+import FoodSearch from './pages/food/FoodSearch';
+import AllPosts from './pages/post/AllPosts';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -24,7 +28,7 @@ const App: React.FC = () => {
       try {
         const response = await AxiosInstance.get('/auth/check'); // Adjust endpoint as needed
         console.log('Auth check response:', response.data); // Debugging log
-        setIsAuthenticated(response.data.isAuthenticated); // Adjust according to your API response structure
+        setIsAuthenticated(!!response.data.id); // Adjust according to your API response structure
       } catch (error) {
         console.error('Error checking authentication:', error);
         setIsAuthenticated(false); // Not authenticated if error occurs
@@ -50,7 +54,7 @@ const App: React.FC = () => {
       <div className="App">
         <Header isAuthenticated={isAuthenticated} loading={loading} handleLogout={handleLogout} />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home isAuthenticated={isAuthenticated} />} />
           <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard />} />
@@ -58,8 +62,13 @@ const App: React.FC = () => {
           <Route path="/profile"
             element={<Profile isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />}
           />
-          <Route path="/diet/:dietID" element={<DietInfo />} />
-          <Route path="/search-food" element={<SearchFood />} />
+          <Route path="/post/:postId" element={<PostView />} />
+          <Route path="/post/:postId/edit" element={<EditPost />} />
+          <Route path="/diet/:dietId/create-post" element={<CreatePost />} />
+          <Route path="/diet/daily/:date" element={<DailyDiet />} />
+          <Route path="/diet/:dietId" element={<DietInfo />} />
+          <Route path="/search-food" element={<FoodSearch />} />
+          <Route path="/all-posts" element={<AllPosts />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

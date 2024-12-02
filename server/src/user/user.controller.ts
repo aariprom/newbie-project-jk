@@ -27,9 +27,10 @@ export class UserController {
     return this.userService.editProfile(user.id, body);
   }
 
-  @Post('/profile/upload-profile-pic')
+  @Post('/profile/upload')
   @UseInterceptors(FileInterceptor('file', {
     fileFilter: (req, file, cb) => {
+      console.log(req, file);
       if (!file.mimetype.startsWith('image/')) {
         return cb(new BadRequestException('Only image files are allowed!'), false);
       }
@@ -46,6 +47,8 @@ export class UserController {
     @CurrentUser() user: User,
     @UploadedFile() file: Express.Multer.File
   ) {
+    console.log(user.id);
+    console.log(file);
     if (!file) {
       console.log(file);
       throw new BadRequestException('No files uploaded');

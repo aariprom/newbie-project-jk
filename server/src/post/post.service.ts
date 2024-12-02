@@ -1,6 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreatePostDto } from './dto/createPost.dto';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
+import { CreatePostDto } from './dto/createPost.dto';
 import { EditPostDto } from './dto/editPost.dto';
 import { PostResDto } from './dto/postRes.dto';
 
@@ -59,11 +59,20 @@ export class PostService {
   }
 
   async deletePost(postId: number) {
-    return this.prisma.post.delete({
+    const post = await this.prisma.post.findUnique({
       where: {
-        id: Number(postId),
+        id: postId,
       }
     });
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    } else {
+      await this.prisma.post.delete({
+        where: {
+          id: postId,
+        }
+      })
+    }
   }
 
   async deletePostByUserId(userId: string) {
@@ -133,6 +142,7 @@ export class PostService {
             url: true,
           },
         },
+        isPublic: true,
         diet: {
           select: {
             foods: {
@@ -144,18 +154,21 @@ export class PostService {
                   }
                 }
               }
-            }
+            },
+            type: true,
+            date: true,
           }
         }
       },
     });
     if (!post) {
-      throw new BadRequestException('No post found');
+      return null;
     }
     return new PostResDto(post);
   }
 
   async editPost(postId: number, data: EditPostDto) {
+    console.log(postId, data);
     const post = await this.prisma.post.update({
       data: {
         ...data,
@@ -178,5 +191,43 @@ export class PostService {
       },
     });
     return new PostResDto(post);
+  }
+
+  async getPost() {
+    const posts = await this.prisma.post.findMany({
+      where: {
+        isPublic: true,
+      },
+      select: {
+        id: true,
+        userId: true,
+        title: true,
+        content: true,
+        createdDate: true,
+        modifiedDate: true,
+        pictures: {
+          select: {
+            url: true,
+          },
+        },
+        diet: {
+          select: {
+            foods: {
+              select: {
+                food: {
+                  select: {
+                    id: true,
+                    name: true,
+                  }
+                }
+              }
+            },
+            type: true,
+            date: true,
+          }
+        }
+      },
+    });
+    return posts.map(post => new PostResDto(post));
   }
 }

@@ -1,10 +1,10 @@
 .profile-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #f9f9f9;
+    max-width: 600px; /* Set a maximum width for the profile container */
+    margin: 0 auto; /* Center the container */
+    padding: 20px; /* Add padding around the container */
+    border: 1px solid #ddd; /* Light gray border */
+    border-radius: 8px; /* Rounded corners */
+    background-color: #f9f9f9; /* Light background color */
 }
 
 .profile-info {
@@ -13,11 +13,18 @@
     align-items: center;
 }
 
-.profile-info img {
-    width: 150px; /* Adjust size as needed */
-    height: 150px; /* Adjust size as needed */
-    border-radius: 50%; /* Circular profile picture */
-    margin-bottom: 20px;
+.profile-image-container {
+    width: 100px; /* Set a fixed width for the image container */
+    height: 100px; /* Set a fixed height for the image container */
+    overflow: hidden; /* Hide overflow to maintain dimensions */
+    border-radius: 50%; /* Circular shape for profile picture */
+    border: 2px solid #ccc; /* Optional border around the image */
+}
+
+.profile-image-container img {
+    width: 100%; /* Make image take full width of container */
+    height: 100%; /* Make image take full height of container */
+    object-fit: cover; /* Ensure the image covers the entire container */
 }
 
 .profile-info p {

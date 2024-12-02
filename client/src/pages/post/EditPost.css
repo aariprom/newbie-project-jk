@@ -1,0 +1,35 @@
+/* src/styles/EditPost.css */
+.edit-post-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.edit-post-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-post-container input,
+.edit-post-container textarea {
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.edit-post-container button {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.success-message {
+    color: green;
+    margin-top: 10px;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+}

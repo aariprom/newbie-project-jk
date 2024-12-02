@@ -6,7 +6,9 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { CreateUserDto } from './dto/createUser.dto';
 import { Public } from './public.decorator';
-import { LoginDto } from './dto/login.dto';
+import { CredentialDto } from './dto/credential.dto';
+import { ApiResponse } from '@nestjs/swagger';
+import { UserResDto } from '../user/dto/userRes.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -14,32 +16,43 @@ export class AuthController {
 
   @Post('/signup')
   @Public()
-  async signup(@Body() body: CreateUserDto): Promise<User> {
+  @ApiResponse({ status: 201, description: 'User created successfully.', type: UserResDto })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  async signup(@Body() body: CreateUserDto): Promise<UserResDto> {
     return this.authService.createUser(body);
   }
 
   @Post('/login')
   @UseGuards(LocalAuthGuard)
-  async login(@Body() body: LoginDto, @Res({ passthrough: true }) res: Response) {
+  @ApiResponse({ status: 201, description: 'Login successful.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @ApiResponse({ status: 401, description: 'Login failed.' })
+  async login(@Body() body: CredentialDto, @Res({ passthrough: true }) res: Response): Promise<string> {
     await this.authService.login(body, res);
     return 'Login successful.';
   }
 
   @Post('/logout')
+  @ApiResponse({ status: 201, description: 'Logout successful.' })
   async logout(
-    @CurrentUser() user: User, @Res({ passthrough: true }) res: Response) {
+    @CurrentUser() user: User, @Res({ passthrough: true }) res: Response): Promise<string> {
     await this.authService.logout(user, res);
     return 'Logout successful.';
   }
 
   @Get('/check')
   @Public()
-  async check(@CurrentUser() user: User) {
+  @ApiResponse({
+    status: 200, description: 'Authentication check successful.',
+    type: CredentialDto
+  })
+  async check(@CurrentUser() user: User): Promise<Partial<CredentialDto>> {
     return this.authService.authCheck(user);
   }
 
   @Post('/refresh')
-  async refresh(@CurrentUser() user: User) {
+  @ApiResponse({ status: 201, description: 'Refresh token successful.' })
+  async refresh(@CurrentUser() user: User): Promise<string> {
     return 'Refresh successful.';
   }
 }

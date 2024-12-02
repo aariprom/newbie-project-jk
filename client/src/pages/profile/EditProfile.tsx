@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import AxiosInstance from '../../utils/AxiosInstance'; // Adjust import as necessary
-import { UserProfile } from './Profile';
+import { EditUserProfile, UserProfile } from './Profile';
+import { useNavigate } from 'react-router-dom';
+
 
 interface EditProfileProps {
-  userProfile: UserProfile;
+  editUserProfile: EditUserProfile | null;
   onUpdate: (updatedProfile: UserProfile) => void; // Callback to update the profile in parent
 }
 
-const EditProfile: React.FC<EditProfileProps> = ({ userProfile, onUpdate }) => {
-  const [formData, setFormData] = useState<UserProfile>(userProfile);
+const EditProfile: React.FC<EditProfileProps> = ({ editUserProfile, onUpdate }) => {
+  const [formData, setFormData] = useState<EditUserProfile|null>(editUserProfile);
+  const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     let input = e.target as HTMLInputElement;
@@ -40,7 +43,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ userProfile, onUpdate }) => {
         <input
           type="number"
           name="age"
-          value={formData.age || ''}
+          value={formData?.age || ''}
           onChange={handleInputChange}
           placeholder="Age"
         />
@@ -50,7 +53,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ userProfile, onUpdate }) => {
         <input
           type="number"
           name="height"
-          value={formData.height || ''}
+          value={formData?.height || ''}
           onChange={handleInputChange}
           placeholder="Height in cm"
         />
@@ -60,17 +63,17 @@ const EditProfile: React.FC<EditProfileProps> = ({ userProfile, onUpdate }) => {
         <input
           type="number"
           name="weight"
-          value={formData.weight || ''}
+          value={formData?.weight || ''}
           onChange={handleInputChange}
           placeholder="Weight in kg"
         />
       </div>
       <div>
         <label>Sex:</label>
-        <select name="sex" value={formData.sex || ''} onChange={handleInputChange}>
+        <select name="sex" value={formData?.sex || ''} onChange={handleInputChange}>
           <option value="">Select</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
+          <option value="M">Male</option>
+          <option value="F">Female</option>
           {/* Add other options as necessary */}
         </select>
       </div>
@@ -79,7 +82,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ userProfile, onUpdate }) => {
         <input
           type="number"
           name="level"
-          value={formData.level || ''}
+          value={formData?.level || ''}
           onChange={handleInputChange}
           placeholder="Level"
         />
@@ -89,7 +92,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ userProfile, onUpdate }) => {
         <input
           type="checkbox"
           name="privateProfile"
-          checked={formData.privateProfile}
+          checked={formData?.privateProfile}
           onChange={handleInputChange} // No need to change this line
         />
       </div>

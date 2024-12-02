@@ -29,8 +29,8 @@ export class DailyConsumeService {
   async refStat(userId: string) {
     const data = await this.userData(userId);
     const cal = data.sex === ('M' as Sex) ?
-      (10 * data.weight + 6.25 * data.height - 5 * data.age + 5) * data.level :
-      (10 * data.weight + 6.25 * data.height - 5 * data.age - 161) * data.level;
+      (10 * data.weight + 6.25 * data.height - 5 * data.age + 5) * (1 + (data.level - 3)*0.2):
+      (10 * data.weight + 6.25 * data.height - 5 * data.age - 161) * (1 + (data.level - 3)*0.2);
     const carbohydrates = 0.55*cal/4;
     const protein = 0.225*cal/9;
     const fat = 0.275*cal/4;

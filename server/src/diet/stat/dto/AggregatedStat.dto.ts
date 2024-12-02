@@ -1,23 +1,39 @@
 import { IsObject } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { StatDto } from './stat.dto';
+import { Count } from '../type/count.type';
 
 export class AggregatedStatDto {
-  @IsObject()
-  stats: {
-    calories: number;
-    fat: number;
-    protein: number;
-    sugars: number;
-    carbohydrates: number;
-    sodium: number;
-  };
 
+  @ApiProperty({
+    description: 'Aggregated nutritional stats',
+    example: {
+      calories: 250,
+      fat: 10,
+      protein: 15,
+      sugars: 5,
+      carbohydrates: 30,
+      sodium: 200,
+    },
+  })
   @IsObject()
-  count: {
-    [key: string]: {
-      deficient: number;
-      exceeded: number;
-    };
-  };
+  stats: StatDto;
+
+  @ApiProperty({
+    description: 'Count of nutritional deficiencies and excesses',
+    additionalProperties: {
+      properties: {
+        deficient: { type: 'number', example: 1 },
+        exceeded: { type: 'number', example: 2 },
+      },
+    },
+    example: {
+      protein: { deficient: 1, exceeded: 0 },
+      fat: { deficient: 0, exceeded: 2 },
+    },
+  })
+  @IsObject()
+  count: Count;
 
   constructor(stats: Partial<AggregatedStatDto['stats']>, count: AggregatedStatDto['count']) {
     this.stats = {

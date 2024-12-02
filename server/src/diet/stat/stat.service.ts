@@ -3,54 +3,15 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
 import { StatDto } from './dto/stat.dto';
 import { AggregatedStatDto } from './dto/AggregatedStat.dto';
+import { NutrientStatus } from './type/nutientStat.dto';
+import { Count } from './type/count.type';
+import { Diff } from './type/diff.type';
+import { StatResDto } from '../dto/statRes.dto';
 
-type NutrientStatus = {
-  cal: "D" | "E",
-  carbohydrate: "D" | "E",
-  protein: "D" | "E",
-  fat: "D" | "E",
-  sugars: "D" | "E",
-  sodium: "D" | "E",
-};
-
-type Count = {
-  cal: {
-    deficient: number,
-    exceeded: number,
-  },
-  carbohydrates: {
-    deficient: number,
-    exceeded: number,
-  },
-  protein: {
-    deficient: number,
-    exceeded: number,
-  },
-  fat: {
-    deficient: number,
-    exceeded: number,
-  },
-  sodium: {
-    deficient: number,
-    exceeded: number,
-  },
-  sugars: {
-    deficient: number,
-    exceeded: number,
-  }
-}
 @Injectable()
 export class StatService {
   constructor(private readonly dailyConsumeService: DailyConsumeService,
               private readonly prisma: PrismaService) {}
-
-  onModuleInit() {
-    if (!this.prisma) {
-      console.error('PrismaService is undefined in StatService!');
-    } else {
-      console.log('PrismaService is successfully injected in StatService!');
-    }
-  }
 
   async getDietStats(userId: string, dietId: number) {
     const diet = await this.prisma.diet.findUnique({
@@ -102,11 +63,7 @@ export class StatService {
     const recommendations =
      */
 
-    return {
-      stat: new StatDto(stat),
-      count: count,
-      diff: diff,
-    };
+    return new StatResDto({ stat: new StatDto(stat), count: count, diff: diff});
   }
 
   async getDailyStats(userId: string, date: Date) {
@@ -118,10 +75,6 @@ export class StatService {
         id: true,
       }
     });
-
-    if (diets.length === 0) {
-      throw new NotFoundException('No diet found for the given date.');
-    }
 
     return this.aggregate(userId, diets);
   }
@@ -234,7 +187,7 @@ export class StatService {
   ) {
     const ref = await this.dailyConsumeService.refStat(userId);
     const msg: any = {};
-    const diff = {
+    const diff: Diff = {
       cal: stat.calories - ref.cal,
       carb: stat.carbohydrates - ref.carbohydrates,
       protein: stat.protein - ref.protein,

@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import AxiosInstance from '../../utils/AxiosInstance'; // Adjust import as necessary
 import EditProfile from './EditProfile'; // Import EditProfile component
 import './EditProfile.css';
+import ProfileImageUpload from './UploadProfileImage';
+import DefaultProfilePic from './default-profile-pic.jpeg';
+import UploadProfileImage from './UploadProfileImage';
 
 export interface UserProfile {
   id: string;
@@ -17,6 +20,15 @@ export interface UserProfile {
   privateProfile: boolean;
 }
 
+export interface EditUserProfile {
+  age?: number;
+  height?: number;
+  weight?: number;
+  sex?: string;
+  level?: number;
+  privateProfile?: boolean;
+}
+
 interface ProfileProps {
   isAuthenticated: boolean; // Accept isAuthenticated as a prop
   setIsAuthenticated: (isAuth: boolean) => void; // Accept setIsAuthenticated as a prop
@@ -24,17 +36,13 @@ interface ProfileProps {
 
 const Profile: React.FC<ProfileProps> = ({ isAuthenticated, setIsAuthenticated }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [editUserProfile, setEditUserProfile] = useState<EditUserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<boolean>(false); // State to toggle editing mode
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      alert('Please login first.');
-      navigate('/login'); // Redirect to login if not authenticated
-      return; // Exit early
-    }
 
     const fetchUserProfile = async () => {
       try {
@@ -57,8 +65,8 @@ const Profile: React.FC<ProfileProps> = ({ isAuthenticated, setIsAuthenticated }
     setEditing(!editing); // Toggle editing mode
   };
 
-  const handleUpdate = (updatedProfile: UserProfile) => {
-    setUserProfile(updatedProfile); // Update local state with new profile data
+  const handleUpdate = (updatedProfile: EditUserProfile) => {
+    setEditUserProfile(updatedProfile); // Update local state with new profile data
     setEditing(false); // Exit editing mode after successful update
   };
 
@@ -74,13 +82,18 @@ const Profile: React.FC<ProfileProps> = ({ isAuthenticated, setIsAuthenticated }
     <div className="profile-container">
       <h2>User Profile</h2>
       {userProfile && (
-        <>
-          <img src={userProfile.profilePicUrl || 'default-profile-pic.png'} alt="Profile" />
+        <div className="profile-info">
+          <div className="profile-image-container">
+            <img src={userProfile.profilePicUrl || 'default-profile-pic.png'} alt="Profile" />
+          </div>
+          < UploadProfileImage />
           <p><strong>ID:</strong> {userProfile.id}</p>
           <p><strong>Email:</strong> {userProfile.email}</p>
-
           {editing ? (
-            <EditProfile userProfile={userProfile} onUpdate={handleUpdate} />
+            <>
+              <EditProfile editUserProfile={editUserProfile} onUpdate={handleUpdate} />
+              <button onClick={handleEditToggle}>Cancel</button>
+            </>
           ) : (
             <>
               {userProfile.age && <p><strong>Age:</strong> {userProfile.age}</p>}
@@ -89,11 +102,11 @@ const Profile: React.FC<ProfileProps> = ({ isAuthenticated, setIsAuthenticated }
               {userProfile.sex && <p><strong>Sex:</strong> {userProfile.sex}</p>}
               {userProfile.level && <p><strong>Level:</strong> {userProfile.level}</p>}
               <button onClick={handleEditToggle}>Edit Profile</button>
+
+              <p><strong>Created Date:</strong> {new Date(userProfile.createdDate).toLocaleDateString()}</p>
             </>
           )}
-
-          <p><strong>Created Date:</strong> {new Date(userProfile.createdDate).toLocaleDateString()}</p>
-        </>
+        </div>
       )}
     </div>
   );

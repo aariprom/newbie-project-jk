@@ -1,5 +1,7 @@
-.search-food-container {
-    max-width: 600px; /* Set a maximum width for the container */
+/* src/pages/ProfileImageUpload.css */
+
+.profile-image-upload-container {
+    max-width: 200px; /* Set a maximum width for the upload container */
     margin: auto; /* Center the container */
     padding: 20px; /* Add padding around the container */
     border: 1px solid #ddd; /* Light gray border */
@@ -20,12 +22,8 @@ label {
     font-weight: bold; /* Make labels bold */
 }
 
-input[type="text"],
-input[type="number"] {
-    padding: 8px; /* Padding inside inputs */
-    font-size: 16px; /* Font size for inputs */
-    border-radius: 4px; /* Rounded corners */
-    border: 1px solid #ccc; /* Light gray border */
+input[type="file"] {
+    padding: 8px; /* Padding inside file input */
 }
 
 button[type="submit"] {
@@ -42,15 +40,20 @@ button[type="submit"]:hover {
     background-color: #0056b3; /* Darker shade on hover */
 }
 
-.search-results {
-    margin-top: 20px; /* Space above search results section */
+.error {
+    color: red; /* Red color for error messages */
 }
 
-.search-results ul {
-    list-style-type: none; /* Remove default list styling */
-    padding-left: 0; /* Remove left padding from lists */
+.success {
+    color: green; /* Green color for success messages */
 }
 
-.search-results li {
-    margin-bottom: 10px; /* Space between list items */
+/* Styles for image preview */
+.image-preview {
+    margin-top: 15px; /* Space above the image preview */
+}
+
+.image-preview img {
+    max-width: 100%; /* Make sure the image doesn't exceed its container width */
+    height: auto; /* Maintain aspect ratio */
 }
